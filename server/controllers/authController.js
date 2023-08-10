@@ -32,9 +32,9 @@ export const register = async (req, res) => {
             impressions: Math.floor(Math.random() * 1000),
         });
         const savedUser = await newUser.save();
-        res.staus(201).json(savedUser);
+        res.status(201).json(savedUser);
     } catch (err) {
-        res.staus(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 };
 
@@ -42,15 +42,15 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email: email });
-        if (!user) return res.staus(400).json({ msg: "Sorry, account not found." });
+        if (!user) return res.status(400).json({ msg: "Sorry, account not found." });
 
         const passwordsMatch = await bcrypt.compare(password, user.password);
-        if (!passwordsMatch) return res.staus(400).json({ msg: "Invalid credentials." });
+        if (!passwordsMatch) return res.status(400).json({ msg: "Invalid credentials." });
 
         const token = jwt.sign({ id: user._id, }, process.env.JWT_SECRET);
         delete user.password;
         res.status(200).json({ token, user });
     } catch (err) {
-        res.staus(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 }; 

@@ -4,28 +4,20 @@ import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
     userId: {
-        type: String,
-        required: true,
-    },
-    firstName: {
-        type: String,
-        required: true,
-    },
-    lastName: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     location: String,
     content: String,
     picturePath: String,
-    userPicturePath: String,
     likes: {
-        /* TODO: Look into mongoose type: map */
         type: Map,
         of: Boolean
     },
     comments: {
-        type: Array,
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Comment",
         default: [],
     }
 }, { timestamps: true });
