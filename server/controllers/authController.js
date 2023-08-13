@@ -19,6 +19,8 @@ export const register = async (req, res) => {
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(password, salt);
 
+        /* TODO: add default picture path is none is provided*/
+
         const newUser = new User({
             firstName,
             lastName,
@@ -40,6 +42,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
+        console.log("logging in");
         const { email, password } = req.body;
         const user = await User.findOne({ email: email });
         if (!user) return res.status(400).json({ msg: "Sorry, account not found." });
