@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import state from "state";
 
 const initialState = {
     posts: [],
@@ -36,10 +35,10 @@ export const postsSlice = createSlice({
     },
     extraReducers(builder) {
         builder
-            .addCase(fetchPosts.pending, (state, action) => {
+            .addCase(fetchPosts.pending, (state) => {
                 state.status = "loading";
             })
-            .addCase(fetchPosts.fulfilled, (staet, action) => {
+            .addCase(fetchPosts.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.posts = state.posts.concat(action.payload);
             })

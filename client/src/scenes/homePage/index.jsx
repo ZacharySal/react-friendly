@@ -9,7 +9,7 @@ import FriendListWidget from "scenes/widgets/FriendListWidget";
 
 const HomePage = () => {
   const isDesktopScreen = useMediaQuery("(min-width:1000px)");
-  const { _id, pictureKey } = useSelector((state) => state.user);
+  const { _id, pictureKey } = useSelector((state) => state.user.user);
 
   return (
     <Box>

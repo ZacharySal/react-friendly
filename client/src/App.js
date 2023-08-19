@@ -9,9 +9,9 @@ import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "theme";
 
 function App() {
-  const mode = useSelector((state) => state.mode);
+  const mode = useSelector((state) => state.user.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const isAuthorized = Boolean(useSelector((state) => state.token));
+  const isAuthorized = Boolean(useSelector((state) => state.user.token));
 
   return (
     <div className="App">

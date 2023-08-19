@@ -22,7 +22,7 @@ import Comment from "./CommentWidget";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState, useEffect, useDebugValue } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "state";
+import { setPost } from "app/postsSlice";
 
 const PostWidget = ({
   postId,
@@ -44,8 +44,8 @@ const PostWidget = ({
   const time = timeAgo.format(new Date(createdAt));
 
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.token);
-  const loggedInUserId = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.user.token);
+  const loggedInUserId = useSelector((state) => state.user.user._id);
 
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;

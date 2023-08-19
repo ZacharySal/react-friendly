@@ -21,7 +21,7 @@ import {
   Close,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { setMode, setLogout } from "state/index";
+import { setMode, setLogout } from "app/userSlice";
 import FlexBetween from "components/FlexBetween";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +29,7 @@ const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user);
   const isDesktopScreen = useMediaQuery("(min-width: 1000px)");
 
   const theme = useTheme();

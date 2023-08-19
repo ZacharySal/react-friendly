@@ -55,12 +55,12 @@ export const addRemoveFriend = async (req, res) => {
         );
 
         /* TODO: check if this syntax is neccessary? */
-        const formattedFriends = friends.map(({
-            _id, firstName, lastName, occupation, location, pictureKey
-        }) => {
-            return { _id, firstName, lastName, occupation, location, pictureKey };
-        });
-        res.status(200).json(formattedFriends);
+        // const formattedFriends = friends.map(({
+        //     _id, firstName, lastName, occupation, location, pictureKey
+        // }) => {
+        //     return { _id, firstName, lastName, occupation, location, pictureKey };
+        // });
+        res.status(200).json(user);
     } catch (err) {
         res.status(404).json({ msg: err.message });
     }

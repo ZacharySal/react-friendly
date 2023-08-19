@@ -7,7 +7,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { setFriends } from "state";
+import { setFriends, setUser } from "app/userSlice";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { useNavigate } from "react-router-dom";
@@ -22,11 +22,11 @@ const Friend = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { _id } = useSelector((state) => state.user);
+  const { _id } = useSelector((state) => state.user.user);
   console.log(`Logged in id: ${_id}`);
   console.log(`Friend Id: ${friendId}`);
-  const token = useSelector((state) => state.token);
-  const friends = useSelector((state) => state.user.friends);
+  const token = useSelector((state) => state.user.token);
+  const friends = useSelector((state) => state.user.user.friends);
   console.log(`Friends: ${JSON.stringify(friends)}`);
 
   const { palette } = useTheme();
@@ -49,7 +49,7 @@ const Friend = ({
       }
     );
     const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+    dispatch(setUser({ data }));
   };
 
   return (
