@@ -13,6 +13,7 @@ const FriendListWidget = ({ userId }) => {
   const friends = useSelector((state) => state.user.friends);
 
   const getFriends = async () => {
+    console.log("Getting friends");
     const response = await fetch(
       `http://localhost:3001/users/${userId}/friends`,
       {
@@ -22,6 +23,7 @@ const FriendListWidget = ({ userId }) => {
     );
     const data = await response.json();
     setIsLoading(false);
+    console.log(`Friends data recieved from server: ${data}`);
     dispatch(setFriends({ friends: data }));
   };
 
@@ -49,6 +51,7 @@ const FriendListWidget = ({ userId }) => {
                 name={`${friend.firstName} ${friend.lastName}`}
                 subtitle={friend.occupation}
                 pictureKey={friend.pictureKey}
+                isPost={false}
               />
             ))}
           </Box>

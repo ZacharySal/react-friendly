@@ -39,7 +39,7 @@ const PostWidget = ({
   const [userInfo, setUserInfo] = useState({});
   const [commentValue, setCommentValue] = useState("");
 
-  TimeAgo.addDefaultLocale(en);
+  TimeAgo.addLocale(en);
   const timeAgo = new TimeAgo("en-US");
   const time = timeAgo.format(new Date(createdAt));
 
@@ -185,16 +185,18 @@ const PostWidget = ({
                 sx={{
                   marginTop: "0.5rem",
                   width: "100%",
-                  height: "3rem",
                   backgroundColor: palette.neutral.light,
                   borderRadius: "1rem",
                   padding: "1rem",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
+                  wordBreak: "break-all",
                 }}
               >
                 <InputBase
+                  fullWidth
+                  multiline
                   placeholder="Add a comment"
                   onChange={(e) => setCommentValue(e.target.value)}
                   onKeyDown={handleKeyPress}

@@ -22,6 +22,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     setIsLoading(false);
   };
 
+  /* Do not dispatch get user posts to store */
   const getUserPosts = async () => {
     const response = await fetch(`http://localhost:3001/posts/${userId}`, {
       method: "GET",

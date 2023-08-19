@@ -12,12 +12,22 @@ import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { useNavigate } from "react-router-dom";
 
-const Friend = ({ friendId, name, subtitle, pictureKey, time = null }) => {
+const Friend = ({
+  friendId,
+  name,
+  subtitle,
+  pictureKey,
+  time = null,
+  isPost = true,
+}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { _id } = useSelector((state) => state.user);
+  console.log(`Logged in id: ${_id}`);
+  console.log(`Friend Id: ${friendId}`);
   const token = useSelector((state) => state.token);
   const friends = useSelector((state) => state.user.friends);
+  console.log(`Friends: ${JSON.stringify(friends)}`);
 
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
@@ -57,14 +67,16 @@ const Friend = ({ friendId, name, subtitle, pictureKey, time = null }) => {
           pictureKey={pictureKey}
           size="55px"
           isSelf={isSelf}
-          isPost={true}
+          isPost={isPost}
+          isFriend={isFriend}
+          friendId={friendId}
+          patchFriend={patchFriend}
         />
         <Box
           sx={{ width: "100%" }}
           onClick={() => {
             navigate(`/profile/${friendId}`);
             /* TODO: Investigate hack */
-            navigate(0);
           }}
         >
           <Box
@@ -97,23 +109,6 @@ const Friend = ({ friendId, name, subtitle, pictureKey, time = null }) => {
               >
                 {name}
               </Typography>
-              {!isSelf && (
-                <IconButton
-                  onClick={() => patchFriend()}
-                  sx={{ fontSize: "large" }}
-                >
-                  {isFriend ? (
-                    <PersonRemoveOutlined
-                      size="large"
-                      sx={{ color: primaryDark }}
-                    />
-                  ) : (
-                    <AddCircleIcon
-                      sx={{ fontSize: "large", color: palette.primary.main }}
-                    />
-                  )}
-                </IconButton>
-              )}
             </Box>
             {time ? (
               <>
@@ -126,7 +121,7 @@ const Friend = ({ friendId, name, subtitle, pictureKey, time = null }) => {
                   }}
                 >
                   <AccessTimeIcon />
-                  <Typography variant="h5" fontWeight="300">
+                  <Typography variant="h6" fontWeight="300">
                     {time}
                   </Typography>
                 </Box>

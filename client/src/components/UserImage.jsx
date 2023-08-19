@@ -1,7 +1,16 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 
-const UserImage = ({ pictureKey, size = "60px", isSelf, isPost = false }) => {
+const UserImage = ({
+  pictureKey,
+  size = "60px",
+  isSelf,
+  isPost = false,
+  isFriend,
+  friendId,
+  patchFriend,
+}) => {
   const { palette } = useTheme();
   return (
     <Box position="relative" width={size} height={size}>
@@ -14,23 +23,51 @@ const UserImage = ({ pictureKey, size = "60px", isSelf, isPost = false }) => {
       />
       {isPost && !isSelf && (
         <IconButton
+          onClick={() => patchFriend(friendId)}
+          size="medium"
+          edge="start"
           sx={{
             position: "absolute",
-            backgroundColor: palette.primary.light,
             borderRadius: "2rem",
-            bottom: "-5px",
-            right: 0,
+            bottom: "-12px",
+            right: "-8px",
+            fontSize: "25px",
           }}
         >
-          <AddCircleIcon
-            sx={{
-              color: palette.primary.dark,
-            }}
-          />
+          {isFriend ? (
+            <RemoveCircleIcon
+              fontSize="inherit"
+              sx={{
+                color: palette.primary.main,
+                backgroundColor: "white",
+                borderRadius: "2rem",
+              }}
+            />
+          ) : (
+            <AddCircleIcon
+              fontSize="inherit"
+              sx={{
+                color: palette.primary.main,
+                backgroundColor: "white",
+                borderRadius: "2rem",
+              }}
+            />
+          )}
         </IconButton>
       )}
     </Box>
   );
 };
+
+// {isFriend ? (
+//   <PersonRemoveOutlined
+//     size="large"
+//     sx={{ color: primaryDark }}
+//   />
+// ) : (
+//   <AddCircleIcon
+//     sx={{ fontSize: "large", color: palette.primary.main }}
+//   />
+// )}
 
 export default UserImage;
