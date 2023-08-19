@@ -12,12 +12,14 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action) => {
+            console.log(action.payload);
             state.user = action.payload;
         },
         setMode: (state) => {
             state.mode = state.mode === "light" ? "dark" : "light";
         },
         setLogin: (state, action) => {
+            console.log(action.payload.user);
             state.user = action.payload.user;
             state.token = action.payload.token;
         },

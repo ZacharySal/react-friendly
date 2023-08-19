@@ -1,19 +1,24 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import Friend from "components/UserPostInfo";
-import WidgetWrapper from "components/WidgetWrapper";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setFriends } from "app/userSlice";
+import { useState, useEffect } from "react";
+import { FriendInfo } from "components/UserPostInfo";
+import WidgetWrapper from "components/WidgetWrapper";
 
 const FriendListWidget = ({ userId }) => {
+  const [friends, setFriends] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+
   const dispatch = useDispatch();
   const { palette } = useTheme();
-  const token = useSelector((state) => state.user.token);
-  const friends = useSelector((state) => state.user.friends);
 
+  const loggedInUserId = useSelector((state) => state.user.user._id);
+  const loggedInUserFriends = useSelector((state) => state.user.user.friends);
+  const token = useSelector((state) => state.user.token);
+
+  const isLoggedInUser = userId === loggedInUserId;
+
+  // we only need to get friends if the friend list widget is not for the logged in user, do not dispatch to store
   const getFriends = async () => {
-    console.log("Getting friends");
     const response = await fetch(
       `http://localhost:3001/users/${userId}/friends`,
       {
@@ -22,14 +27,20 @@ const FriendListWidget = ({ userId }) => {
       }
     );
     const data = await response.json();
+    setFriends(data);
     setIsLoading(false);
-    console.log(`Friends data recieved from server: ${data}`);
-    dispatch(setFriends({ friends: data }));
   };
 
   useEffect(() => {
-    getFriends();
-  }, []); //eslint-disable-line react-hooks/exhaustive-deps
+    if (isLoggedInUser) {
+      setFriends(loggedInUserFriends);
+      setIsLoading(false);
+    } else {
+      getFriends();
+    }
+  }, []);
+
+  console.log(friends);
 
   return (
     <>
@@ -45,8 +56,8 @@ const FriendListWidget = ({ userId }) => {
           </Typography>
           <Box display="flex" flexDirection="column" gap="1.5rem">
             {friends.map((friend) => (
-              <Friend
-                key={friend._id}
+              <FriendInfo
+                key={friend._id + "Friend Info"}
                 friendId={friend._id}
                 name={`${friend.firstName} ${friend.lastName}`}
                 subtitle={friend.occupation}

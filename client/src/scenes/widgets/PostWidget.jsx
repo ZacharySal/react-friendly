@@ -54,6 +54,8 @@ const PostWidget = ({
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
+  console.log("Post picture key in post widget: ", postPictureKey);
+
   const getAuthorInfo = async () => {
     const response = await fetch(`http://localhost:3001/users/${postUserId}`, {
       method: "GET",

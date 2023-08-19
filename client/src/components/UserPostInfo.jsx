@@ -1,16 +1,10 @@
-import {
-  PaletteRounded,
-  PersonAddOutlined,
-  PersonRemoveOutlined,
-} from "@mui/icons-material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { setFriends, setUser } from "app/userSlice";
+import { useNavigate } from "react-router-dom";
+import { setUser } from "app/userSlice";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
-import { useNavigate } from "react-router-dom";
 
 const UserPostInfo = ({
   authorId,
@@ -20,25 +14,24 @@ const UserPostInfo = ({
   time = null,
   isPost = true,
 }) => {
+  console.log("Picture key in user post info:", pictureKey);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { _id } = useSelector((state) => state.user.user);
+  const loggedInUserId = useSelector((state) => state.user.user._id);
   const token = useSelector((state) => state.user.token);
   const friends = useSelector((state) => state.user.user.friends);
 
   const { palette } = useTheme();
-  const primaryLight = palette.primary.light;
-  const primaryDark = palette.primary.dark;
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
   /* TODO: Check this functionality */
   const isFriend = friends.find((friend) => friend._id === authorId);
-  const isSelf = authorId === _id;
+  const isSelf = authorId === loggedInUserId;
 
   const patchFriend = async () => {
     const response = await fetch(
-      `http://localhost:3001/users/${_id}/${authorId}`,
+      `http://localhost:3001/users/${loggedInUserId}/${authorId}`,
       {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
@@ -66,7 +59,7 @@ const UserPostInfo = ({
           isSelf={isSelf}
           isPost={isPost}
           isFriend={isFriend}
-          friendId={authorId}
+          authorId={authorId}
           patchFriend={patchFriend}
         />
         <Box
@@ -134,4 +127,5 @@ const UserPostInfo = ({
   );
 };
 
+export { UserPostInfo as FriendInfo };
 export default UserPostInfo;

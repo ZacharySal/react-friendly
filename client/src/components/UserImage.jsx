@@ -1,6 +1,6 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, IconButton, useTheme } from "@mui/material";
 
 const UserImage = ({
   pictureKey,
@@ -8,22 +8,27 @@ const UserImage = ({
   isSelf,
   isPost = false,
   isFriend,
-  friendId,
+  authorId,
   patchFriend,
 }) => {
   const { palette } = useTheme();
+
+  console.log("Post picture key in user image widget: ", pictureKey);
+
   return (
     <Box position="relative" width={size} height={size}>
-      <img
-        style={{ objectFit: "cover", borderRadius: "50%" }}
-        width={size}
-        height={size}
-        alt="user"
-        src={`http://localhost:3001/posts/image/${pictureKey}`}
-      />
+      {pictureKey && (
+        <img
+          style={{ objectFit: "cover", borderRadius: "50%" }}
+          width={size}
+          height={size}
+          alt="user"
+          src={`http://localhost:3001/posts/image/${pictureKey}`}
+        />
+      )}
       {isPost && !isSelf && (
         <IconButton
-          onClick={() => patchFriend(friendId)}
+          onClick={() => patchFriend(authorId)}
           size="medium"
           edge="start"
           sx={{
