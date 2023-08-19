@@ -17,7 +17,7 @@ import {
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import FlexBetween from "components/FlexBetween";
-import Friend from "components/Friend";
+import Friend from "components/UserPostInfo";
 import Comment from "./CommentWidget";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState, useEffect, useDebugValue } from "react";

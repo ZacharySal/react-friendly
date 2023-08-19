@@ -12,8 +12,8 @@ import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { useNavigate } from "react-router-dom";
 
-const Friend = ({
-  friendId,
+const UserPostInfo = ({
+  authorId,
   name,
   subtitle,
   pictureKey,
@@ -23,11 +23,8 @@ const Friend = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { _id } = useSelector((state) => state.user.user);
-  console.log(`Logged in id: ${_id}`);
-  console.log(`Friend Id: ${friendId}`);
   const token = useSelector((state) => state.user.token);
   const friends = useSelector((state) => state.user.user.friends);
-  console.log(`Friends: ${JSON.stringify(friends)}`);
 
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
@@ -36,12 +33,12 @@ const Friend = ({
   const medium = palette.neutral.medium;
 
   /* TODO: Check this functionality */
-  const isFriend = friends.find((friend) => friend._id === friendId);
-  const isSelf = friendId === _id;
+  const isFriend = friends.find((friend) => friend._id === authorId);
+  const isSelf = authorId === _id;
 
   const patchFriend = async () => {
     const response = await fetch(
-      `http://localhost:3001/users/${_id}/${friendId}`,
+      `http://localhost:3001/users/${_id}/${authorId}`,
       {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
@@ -69,13 +66,13 @@ const Friend = ({
           isSelf={isSelf}
           isPost={isPost}
           isFriend={isFriend}
-          friendId={friendId}
+          friendId={authorId}
           patchFriend={patchFriend}
         />
         <Box
           sx={{ width: "100%" }}
           onClick={() => {
-            navigate(`/profile/${friendId}`);
+            navigate(`/profile/${authorId}`);
             /* TODO: Investigate hack */
           }}
         >
@@ -137,4 +134,4 @@ const Friend = ({
   );
 };
 
-export default Friend;
+export default UserPostInfo;

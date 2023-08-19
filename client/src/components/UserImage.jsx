@@ -59,15 +59,4 @@ const UserImage = ({
   );
 };
 
-// {isFriend ? (
-//   <PersonRemoveOutlined
-//     size="large"
-//     sx={{ color: primaryDark }}
-//   />
-// ) : (
-//   <AddCircleIcon
-//     sx={{ fontSize: "large", color: palette.primary.main }}
-//   />
-// )}
-
 export default UserImage;
