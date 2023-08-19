@@ -21,9 +21,9 @@ export const getUserFriends = async (req, res) => {
 
         /* TODO: check if this syntax is neccessary? */
         const formattedFriends = friends.map(({
-            _id, firstName, lastName, occupation, location, picturePath
+            _id, firstName, lastName, occupation, location, pictureKey
         }) => {
-            return { _id, firstName, lastName, occupation, location, picturePath };
+            return { _id, firstName, lastName, occupation, location, pictureKey };
         });
         res.status(200).json(formattedFriends);
     } catch (err) {
@@ -56,9 +56,9 @@ export const addRemoveFriend = async (req, res) => {
 
         /* TODO: check if this syntax is neccessary? */
         const formattedFriends = friends.map(({
-            _id, firstName, lastName, occupation, location, picturePath
+            _id, firstName, lastName, occupation, location, pictureKey
         }) => {
-            return { _id, firstName, lastName, occupation, location, picturePath };
+            return { _id, firstName, lastName, occupation, location, pictureKey };
         });
         res.status(200).json(formattedFriends);
     } catch (err) {

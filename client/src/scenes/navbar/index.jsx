@@ -30,18 +30,17 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
-  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+  const isDesktopScreen = useMediaQuery("(min-width: 1000px)");
 
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
-  console.log(neutralLight);
   const dark = theme.palette.neutral.dark;
-  console.log(dark);
   const background = theme.palette.background;
-  const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
 
-  const fullName = `Zachary Salvaggio`;
+  const fullName = `${user.firstName} ${user.lastName}`;
+
+  /* TODO: Fix mobile navigation bc it looks like shit */
 
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
@@ -59,8 +58,12 @@ const Navbar = () => {
         >
           Friendly
         </Typography>
-        {isNonMobileScreens && (
-          <FlexBetween backgroundColor={neutralLight} borderRadius="9px" padding="0.1rem 1.5rem">
+        {isDesktopScreen && (
+          <FlexBetween
+            backgroundColor={neutralLight}
+            borderRadius="9px"
+            padding="0.1rem 1.5rem"
+          >
             <InputBase placeholder="Search" />
             <IconButton>
               <Search />
@@ -70,7 +73,7 @@ const Navbar = () => {
       </FlexBetween>
 
       {/* DESKTOP NAV */}
-      {isNonMobileScreens ? (
+      {isDesktopScreen ? (
         <FlexBetween gap="2rem">
           <IconButton onClick={() => dispatch(setMode())}>
             {theme.palette.mode === "dark" ? (
@@ -79,9 +82,6 @@ const Navbar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }}></LightMode>
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px" }} />
-          <Notifications sx={{ fontSize: "25px" }} />
-          <Help sx={{ fontSize: "25px" }} />
           <FormControl variant="standard" value={fullName}>
             <Select
               value={fullName}
@@ -89,9 +89,8 @@ const Navbar = () => {
                 backgroundColor: neutralLight,
                 width: "auto",
                 borderRadius: "0.25rem",
-                padding: "0.2rem 0.5rem",
+                padding: "0.2rem 0.75rem",
                 "& .MuiSvgIcon-root": {
-                  pr: "0.25rem",
                   width: "3rem",
                 },
                 "& .MuiSelect-select:focus": {
@@ -114,7 +113,7 @@ const Navbar = () => {
       )}
 
       {/* MOBILE NAV */}
-      {!isNonMobileScreens && showMobileMenu && (
+      {!isDesktopScreen && showMobileMenu && (
         <Box
           position="fixed"
           right="0"
@@ -140,7 +139,10 @@ const Navbar = () => {
             alignItems="center"
             gap="3rem"
           >
-            <IconButton onClick={() => dispatch(setMode())} sx={{ fontSize: "25px" }}>
+            <IconButton
+              onClick={() => dispatch(setMode())}
+              sx={{ fontSize: "25px" }}
+            >
               {theme.palette.mode === "dark" ? (
                 <DarkMode sx={{ fontSize: "25px" }} />
               ) : (
@@ -171,7 +173,9 @@ const Navbar = () => {
                 <MenuItem value={fullName}>
                   <Typography>{fullName}</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
+                <MenuItem onClick={() => dispatch(setLogout())}>
+                  Log Out
+                </MenuItem>
               </Select>
             </FormControl>
           </FlexBetween>

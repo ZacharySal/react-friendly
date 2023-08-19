@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Box, Button, TextField, useMediaQuery, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  useMediaQuery,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -38,12 +45,12 @@ const initialValuesLogin = {
   password: "",
 };
 
-const Form = () => {
+const Form = ({ setErrorMsg }) => {
   const [pageType, setPageType] = useState("login");
   const { palette } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isNonMobileScreens = useMediaQuery("(min-width: 600px)");
+  const isDesktopScreen = useMediaQuery("(min-width: 600px)");
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
 
@@ -52,12 +59,14 @@ const Form = () => {
     for (let value in values) {
       formData.append(value, values[value]);
     }
-    formData.append("picturePath", values.picture.name);
 
-    const savedUserResponse = await fetch("http://localhost:3001/auth/register", {
-      method: "POST",
-      body: formData,
-    });
+    const savedUserResponse = await fetch(
+      "http://localhost:3001/auth/register",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     const savedUser = await savedUserResponse.json();
     onSubmitProps.resetForm();
@@ -75,7 +84,7 @@ const Form = () => {
     });
     const loggedIn = await loggedInResponse.json();
     onSubmitProps.resetForm();
-    if (loggedIn.status === 201) {
+    if (loggedInResponse.status === 200) {
       dispatch(
         setLogin({
           user: loggedIn.user,
@@ -83,6 +92,8 @@ const Form = () => {
         })
       );
       navigate("/home");
+    } else {
+      setErrorMsg(loggedIn.msg);
     }
   };
 
@@ -113,7 +124,7 @@ const Form = () => {
             gap="30px"
             gridTemplateColumns="repeat(2, minmax(0,1fr))"
             sx={{
-              "& > div": { gridColumn: isNonMobileScreens ? undefined : "span 2" },
+              "& > div": { gridColumn: isDesktopScreen ? undefined : "span 2" },
             }}
           >
             {isRegister && (
@@ -124,7 +135,9 @@ const Form = () => {
                   onChange={handleChange}
                   value={values.firstName}
                   name="firstName"
-                  error={Boolean(touched.firstName) && Boolean(errors.firstName)}
+                  error={
+                    Boolean(touched.firstName) && Boolean(errors.firstName)
+                  }
                   helperText={touched.firstName && errors.firstName}
                   sx={{ gridColumn: "span 1" }}
                 />
@@ -154,7 +167,9 @@ const Form = () => {
                   onChange={handleChange}
                   value={values.occupation}
                   name="occupation"
-                  error={Boolean(touched.occupation) && Boolean(errors.occupation)}
+                  error={
+                    Boolean(touched.occupation) && Boolean(errors.occupation)
+                  }
                   helperText={touched.occupation && errors.occupation}
                   sx={{ gridColumn: "span 2" }}
                 />
@@ -167,7 +182,9 @@ const Form = () => {
                   <Dropzone
                     acceptedFiles=".jpg,.jpeg,.png"
                     nultiple={false}
-                    onDrop={(acceptedFiles) => setFieldValue("picture", acceptedFiles[0])}
+                    onDrop={(acceptedFiles) =>
+                      setFieldValue("picture", acceptedFiles[0])
+                    }
                   >
                     {({ getRootProps, getInputProps }) => (
                       <Box
@@ -224,7 +241,10 @@ const Form = () => {
                 p: "1rem",
                 backgroundColor: palette.primary.main,
                 color: palette.background.alt,
-                "&:hover": { color: palette.primary.main, backgroundColor: palette.background.alt },
+                "&:hover": {
+                  color: palette.primary.main,
+                  backgroundColor: palette.background.alt,
+                },
               }}
             >
               {isLogin ? "LOGIN" : "REGISTER"}

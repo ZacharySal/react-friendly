@@ -1,10 +1,11 @@
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery, Alert } from "@mui/material";
+import { useState } from "react";
 import Form from "./form";
 
 const LoginPage = () => {
-  console.log("login");
+  const [errorMsg, setErrorMsg] = useState("");
   const theme = useTheme();
-  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+  const isDesktopScreen = useMediaQuery("(min-width: 1000px)");
   return (
     <Box>
       <Box
@@ -19,7 +20,7 @@ const LoginPage = () => {
       </Box>
 
       <Box
-        width={isNonMobileScreens ? "50%" : "90%"}
+        width={isDesktopScreen ? "50%" : "90%"}
         p="2rem"
         m="10rem auto"
         borderRadius="1.5rem"
@@ -28,7 +29,12 @@ const LoginPage = () => {
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
           Welcome to Friendly, the Social Media for Sociopaths!
         </Typography>
-        <Form />
+        {errorMsg && (
+          <Alert severity="error" sx={{ fontSize: "inherit", mb: "1.5rem" }}>
+            {errorMsg}
+          </Alert>
+        )}
+        <Form setErrorMsg={setErrorMsg} />
       </Box>
     </Box>
   );
