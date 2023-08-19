@@ -17,12 +17,12 @@ import {
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import FlexBetween from "components/FlexBetween";
-import Friend from "components/UserPostInfo";
 import Comment from "./CommentWidget";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState, useEffect, useDebugValue } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "app/postsSlice";
+import UserPostInfo from "components/UserPostInfo";
 
 const PostWidget = ({
   postId,
@@ -36,7 +36,7 @@ const PostWidget = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isComments, setIsComments] = useState(false);
-  const [userInfo, setUserInfo] = useState({});
+  const [authorInfo, setAuthorInfo] = useState({});
   const [commentValue, setCommentValue] = useState("");
 
   TimeAgo.addLocale(en);
@@ -54,18 +54,18 @@ const PostWidget = ({
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
-  const getUserInfo = async () => {
+  const getAuthorInfo = async () => {
     const response = await fetch(`http://localhost:3001/users/${postUserId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await response.json();
-    setUserInfo(data);
+    setAuthorInfo(data);
     setIsLoading(false);
   };
 
   useEffect(() => {
-    getUserInfo();
+    getAuthorInfo();
   }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
   const patchLike = async () => {
@@ -123,11 +123,11 @@ const PostWidget = ({
     <>
       {!isLoading && (
         <WidgetWrapper m="2rem 0">
-          <Friend
-            friendId={postUserId}
-            name={`${userInfo.firstName} ${userInfo.lastName}`}
+          <UserPostInfo
+            authorId={postUserId}
+            name={`${authorInfo.firstName} ${authorInfo.lastName}`}
             subtitle={location}
-            pictureKey={userInfo.pictureKey}
+            pictureKey={authorInfo.pictureKey}
             time={time}
           />
           <Typography color={main} sx={{ mt: "1rem" }}>
