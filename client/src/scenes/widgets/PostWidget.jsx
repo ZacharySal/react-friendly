@@ -13,13 +13,12 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import FlexBetween from "components/FlexBetween";
 import Comment from "./CommentWidget";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useState, useEffect, useDebugValue } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { patchLike, patchComment } from "app/postsSlice";
 import UserPostInfo from "components/UserPostInfo";
@@ -52,7 +51,6 @@ const PostWidget = ({
 
   const { palette } = useTheme();
   const main = palette.neutral.main;
-  const primary = palette.primary.main;
 
   //console.log("Post picture key in post widget: ", postPictureKey);
 

@@ -37,7 +37,7 @@ const FriendListWidget = ({ userId }) => {
     } else {
       getFriends();
     }
-  }, [loggedInUserFriends]);
+  }, [loggedInUserFriends]); //eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
