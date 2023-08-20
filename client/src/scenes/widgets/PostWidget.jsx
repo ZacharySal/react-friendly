@@ -40,7 +40,7 @@ const PostWidget = ({
 
   TimeAgo.addLocale(en);
   const timeAgo = new TimeAgo("en-US");
-  const time = timeAgo.format(new Date(createdAt));
+  const time = timeAgo.format(new Date(createdAt), "twitter");
 
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);

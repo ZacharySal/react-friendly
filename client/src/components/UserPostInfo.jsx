@@ -92,7 +92,7 @@ const UserPostInfo = ({
                 <Box
                   sx={{
                     display: "flex",
-                    gap: "0.3rem",
+                    gap: "0.1rem",
                     flexDirection: "row",
                     alignItems: "center",
                     color: palette.neutral.mediumMain,
