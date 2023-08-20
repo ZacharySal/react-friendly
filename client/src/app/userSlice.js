@@ -13,7 +13,7 @@ const initialState = {
 export const patchFriend = createAsyncThunk('user/patchFriend', async (authorId, { getState }) => {
     const state = getState();
     const response = await fetch(
-        `http://https://twitter-clone-node-server-production.up.railway.app/users/${state.user.user._id}/${authorId}`,
+        `https://twitter-clone-node-server-production.up.railway.app/users/${state.user.user._id}/${authorId}`,
         {
             method: "PATCH",
             headers: { Authorization: `Bearer ${state.user.token}` },
