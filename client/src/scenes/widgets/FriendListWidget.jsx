@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { FriendInfo } from "components/UserPostInfo";
 import WidgetWrapper from "components/WidgetWrapper";
@@ -8,7 +8,6 @@ const FriendListWidget = ({ userId }) => {
   const [friends, setFriends] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  const dispatch = useDispatch();
   const { palette } = useTheme();
 
   const loggedInUserId = useSelector((state) => state.user.user._id);
@@ -38,9 +37,7 @@ const FriendListWidget = ({ userId }) => {
     } else {
       getFriends();
     }
-  }, []);
-
-  console.log(friends);
+  }, [loggedInUserFriends]);
 
   return (
     <>
@@ -57,8 +54,8 @@ const FriendListWidget = ({ userId }) => {
           <Box display="flex" flexDirection="column" gap="1.5rem">
             {friends.map((friend) => (
               <FriendInfo
-                key={friend._id + "Friend Info"}
-                friendId={friend._id}
+                key={friend._id}
+                authorId={friend._id}
                 name={`${friend.firstName} ${friend.lastName}`}
                 subtitle={friend.occupation}
                 pictureKey={friend.pictureKey}

@@ -1,17 +1,23 @@
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
-import HomePage from "scenes/homePage";
-import LoginPage from "scenes/loginPage";
-import ProfilePage from "scenes/profilePage";
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "theme";
+import HomePage from "scenes/homePage";
+import LoginPage from "scenes/loginPage";
+import ProfilePage from "scenes/profilePage";
+import { fetchPosts } from "app/postsSlice";
 
 function App() {
+  const dispatch = useDispatch();
   const mode = useSelector((state) => state.user.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuthorized = Boolean(useSelector((state) => state.user.token));
+
+  if (isAuthorized) {
+    dispatch(fetchPosts());
+  }
 
   return (
     <div className="App">

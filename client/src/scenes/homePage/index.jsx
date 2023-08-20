@@ -21,12 +21,14 @@ const HomePage = () => {
         gap="0.5rem"
         justifyContent="space-between"
       >
-        <Box flexBasis={isDesktopScreen ? "26%" : undefined}>
-          <UserInfoWidget userId={_id} pictureKey={pictureKey} />
-        </Box>
+        {isDesktopScreen && (
+          <Box flexBasis={isDesktopScreen ? "26%" : undefined}>
+            <UserInfoWidget userId={_id} pictureKey={pictureKey} />
+          </Box>
+        )}
         <Box
           flexBasis={isDesktopScreen ? "42%" : undefined}
-          mt={isDesktopScreen ? undefined : "2rem"}
+          mt={isDesktopScreen ? undefined : "0rem"}
         >
           <NewPostWidget pictureKey={pictureKey} />
           <PostsWidget userId={_id} />

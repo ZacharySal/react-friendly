@@ -8,12 +8,12 @@ import SendIcon from "@mui/icons-material/Send";
 import {
   Box,
   Divider,
-  Icon,
   IconButton,
   InputBase,
   Typography,
   useTheme,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import FlexBetween from "components/FlexBetween";
@@ -21,7 +21,7 @@ import Comment from "./CommentWidget";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useState, useEffect, useDebugValue } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost } from "app/postsSlice";
+import { patchLike, patchComment } from "app/postsSlice";
 import UserPostInfo from "components/UserPostInfo";
 
 const PostWidget = ({
@@ -54,7 +54,7 @@ const PostWidget = ({
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
-  console.log("Post picture key in post widget: ", postPictureKey);
+  //console.log("Post picture key in post widget: ", postPictureKey);
 
   const getAuthorInfo = async () => {
     const response = await fetch(`http://localhost:3001/users/${postUserId}`, {
@@ -70,61 +70,16 @@ const PostWidget = ({
     getAuthorInfo();
   }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
-  const patchLike = async () => {
-    const response = await fetch(`http://localhost:3001/posts/${postId}/like`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId: loggedInUserId }),
-    });
-    const updatedPost = await response.json();
-    dispatch(setPost({ post: updatedPost }));
-  };
-
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       patchComment();
     }
   };
 
-  const patchComment = async () => {
-    const response = await fetch(
-      `http://localhost:3001/posts/${postId}/comment`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: loggedInUserId, content: commentValue }),
-      }
-    );
-    const updatedPost = await response.json();
-    dispatch(setPost({ post: updatedPost }));
-  };
-
-  const patchCommentLike = async (commentId) => {
-    const response = await fetch(
-      `http://localhost:3001/posts/comment/${commentId}/like`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: loggedInUserId, postId: postId }),
-      }
-    );
-    const updatedPost = await response.json();
-    dispatch(setPost({ post: updatedPost }));
-  };
-
   return (
     <>
       {!isLoading && (
-        <WidgetWrapper m="2rem 0">
+        <WidgetWrapper m="1rem 0">
           <UserPostInfo
             authorId={postUserId}
             name={`${authorInfo.firstName} ${authorInfo.lastName}`}
@@ -147,7 +102,7 @@ const PostWidget = ({
           <FlexBetween mt="0.25rem">
             <FlexBetween gap="1rem">
               <FlexBetween>
-                <IconButton onClick={patchLike}>
+                <IconButton onClick={() => dispatch(patchLike(postId))}>
                   {isLiked ? (
                     <FavoriteOutlined sx={{ color: "red" }} />
                   ) : (
@@ -166,6 +121,7 @@ const PostWidget = ({
             </FlexBetween>
 
             <IconButton>
+              {/* REPLACE */}
               <ShareOutlined />
             </IconButton>
           </FlexBetween>
@@ -177,7 +133,7 @@ const PostWidget = ({
                   comment={comment}
                   token={token}
                   loggedInUserId={loggedInUserId}
-                  patchCommentLike={patchCommentLike}
+                  postId={postId}
                 />
               ))}
 
@@ -185,25 +141,28 @@ const PostWidget = ({
               {/* ADD COMMENT */}
               <Box
                 sx={{
-                  marginTop: "0.5rem",
                   width: "100%",
-                  backgroundColor: palette.neutral.light,
-                  borderRadius: "1rem",
-                  padding: "1rem",
+                  marginTop: "0.5rem",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  wordBreak: "break-all",
+                  backgroundColor: palette.neutral.light,
+                  borderRadius: "2rem",
+                  padding: "0.5rem 1.25rem",
                 }}
               >
                 <InputBase
                   fullWidth
-                  multiline
+                  sx={{}}
                   placeholder="Add a comment"
                   onChange={(e) => setCommentValue(e.target.value)}
                   onKeyDown={handleKeyPress}
                 />
-                <IconButton onClick={patchComment}>
+                <IconButton
+                  onClick={() =>
+                    dispatch(patchComment({ postId, commentValue }))
+                  }
+                >
                   <SendIcon />
                 </IconButton>
               </Box>

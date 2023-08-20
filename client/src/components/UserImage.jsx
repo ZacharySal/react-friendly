@@ -1,6 +1,8 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { Box, IconButton, useTheme } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { patchFriend } from "app/userSlice";
 
 const UserImage = ({
   pictureKey,
@@ -9,11 +11,9 @@ const UserImage = ({
   isPost = false,
   isFriend,
   authorId,
-  patchFriend,
 }) => {
   const { palette } = useTheme();
-
-  console.log("Post picture key in user image widget: ", pictureKey);
+  const dispatch = useDispatch();
 
   return (
     <Box position="relative" width={size} height={size}>
@@ -28,7 +28,7 @@ const UserImage = ({
       )}
       {isPost && !isSelf && (
         <IconButton
-          onClick={() => patchFriend(authorId)}
+          onClick={() => dispatch(patchFriend(authorId))}
           size="medium"
           edge="start"
           sx={{

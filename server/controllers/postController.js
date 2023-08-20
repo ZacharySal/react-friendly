@@ -24,7 +24,7 @@ export const createPost = async (req, res) => {
         });
 
         await newPost.save();
-        const allPosts = await Post.find();
+        const allPosts = await Post.find().sort('-createdAt').populate("comments").exec();
         res.status(201).json(allPosts);
     } catch (err) {
         res.status(409).json({ msg: err.message });
@@ -44,7 +44,6 @@ export const getImage = async (req, res) => {
 export const getAllPosts = async (req, res) => {
     try {
         const allPosts = await Post.find().populate("comments").sort('-createdAt').exec();
-        console.log(allPosts);
         res.status(200).json(allPosts);
     } catch (err) {
         res.status(404).json({ msg: err.message });
@@ -63,7 +62,6 @@ export const getUserPosts = async (req, res) => {
 
 export const likePost = async (req, res) => {
     try {
-        console.log("liking post");
         const { postId } = req.params;
         const { userId } = req.body;
         const post = await Post.findById(postId);
@@ -99,8 +97,8 @@ export const addComment = async (req, res) => {
         const post = await Post.findById(postId);
         post.comments.push(newComment._id);
         await post.save();
-        const responsePost = await Post.findById(postId).populate("comments");
-        res.status(201).json(responsePost);
+        const updatedPost = await Post.findById(postId).populate("comments");
+        res.status(201).json(updatedPost);
 
     } catch (err) {
         res.status(404).json({ msg: err.message });

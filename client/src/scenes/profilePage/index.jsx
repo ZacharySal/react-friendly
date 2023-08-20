@@ -12,9 +12,11 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
   const { userId } = useParams();
+  const loggedInUserId = useSelector((state) => state.user.user._id);
   const token = useSelector((state) => state.user.token);
   const isDesktopScreen = useMediaQuery("(min-width:1000px)");
 
+  const isSelf = loggedInUserId === userId;
   const getUser = async () => {
     const response = await fetch(`http://localhost:3001/users/${userId}`, {
       method: "GET",
@@ -50,9 +52,13 @@ const ProfilePage = () => {
               flexBasis={isDesktopScreen ? "42%" : undefined}
               mt={isDesktopScreen ? undefined : "2rem"}
             >
-              <NewPostWidget pictureKey={user.pictureKey} />
-              <Box m="2rem 0" />
-              <PostsWidget userId={userId} isProfile />
+              {isSelf && (
+                <>
+                  <NewPostWidget pictureKey={user.pictureKey} />
+                  <Box m="2rem 0" />
+                </>
+              )}
+              <PostsWidget userId={userId} isProfile={"true"} />
             </Box>
           </Box>
         </Box>

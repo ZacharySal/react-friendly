@@ -22,7 +22,6 @@ const UserInfoWidget = ({ userId, pictureKey }) => {
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
 
-  /* TODO: Replace with async thunk in user slice */
   const getUser = async () => {
     const response = await fetch(`http://localhost:3001/users/${userId}`, {
       method: "GET",
@@ -37,7 +36,6 @@ const UserInfoWidget = ({ userId, pictureKey }) => {
     getUser();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* TODO: Add loading components */
   if (!user) {
     return null;
   }
@@ -58,8 +56,8 @@ const UserInfoWidget = ({ userId, pictureKey }) => {
         <WidgetWrapper>
           {/* FIRST ROW */}
           <FlexBetween
-            gap="0.5rem"
-            pb="1.1rem"
+            gap="0.25rem"
+            pb="1rem"
             onClick={() => navigate(`/profile/${userId}`)}
           >
             <FlexBetween gap="1rem">
@@ -81,7 +79,6 @@ const UserInfoWidget = ({ userId, pictureKey }) => {
                 <Typography color={medium}>{friends.length} friends</Typography>
               </Box>
             </FlexBetween>
-            <ManageAccountsOutlined />
           </FlexBetween>
 
           <Divider />

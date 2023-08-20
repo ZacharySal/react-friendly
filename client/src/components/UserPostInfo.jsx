@@ -1,10 +1,10 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { Box, Typography, useTheme } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setUser } from "app/userSlice";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
+import { useMediaQuery } from "@mui/material";
 
 const UserPostInfo = ({
   authorId,
@@ -14,8 +14,6 @@ const UserPostInfo = ({
   time = null,
   isPost = true,
 }) => {
-  console.log("Picture key in user post info:", pictureKey);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const loggedInUserId = useSelector((state) => state.user.user._id);
   const token = useSelector((state) => state.user.token);
@@ -25,22 +23,10 @@ const UserPostInfo = ({
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
-  /* TODO: Check this functionality */
+  const isDesktopScreen = useMediaQuery("(min-width:1000px)");
+
   const isFriend = friends.find((friend) => friend._id === authorId);
   const isSelf = authorId === loggedInUserId;
-
-  const patchFriend = async () => {
-    const response = await fetch(
-      `http://localhost:3001/users/${loggedInUserId}/${authorId}`,
-      {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-        "Content-Type": "application/json",
-      }
-    );
-    const data = await response.json();
-    dispatch(setUser({ data }));
-  };
 
   return (
     <FlexBetween>
@@ -60,7 +46,6 @@ const UserPostInfo = ({
           isPost={isPost}
           isFriend={isFriend}
           authorId={authorId}
-          patchFriend={patchFriend}
         />
         <Box
           sx={{ width: "100%" }}
@@ -105,13 +90,14 @@ const UserPostInfo = ({
                 <Box
                   sx={{
                     display: "flex",
-                    gap: "0.25rem",
+                    gap: "0.1rem",
                     flexDirection: "row",
+                    alignItems: "center",
                     color: palette.neutral.mediumMain,
                   }}
                 >
                   <AccessTimeIcon />
-                  <Typography variant="h6" fontWeight="300">
+                  <Typography variant="h7" fontWeight="300">
                     {time}
                   </Typography>
                 </Box>

@@ -13,16 +13,14 @@ import storage from "redux-persist/lib/storage";
 
 import userReducer from "./userSlice";
 import postsReducer from "./postsSlice";
-import postsSlice from "./postsSlice";
 
 const persistConfig = { key: "root", storage, version: 1 };
 const persistedUserReducer = persistReducer(persistConfig, userReducer);
-const persistedPostsReducer = persistReducer(persistConfig, postsReducer);
 
 export const store = configureStore({
     reducer: {
         user: persistedUserReducer,
-        posts: persistedPostsReducer,
+        posts: postsReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

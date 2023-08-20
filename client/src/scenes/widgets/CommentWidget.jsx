@@ -3,15 +3,20 @@ import FlexBetween from "components/FlexBetween";
 import { FavoriteBorderOutlined, FavoriteOutlined } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import UserImage from "components/UserImage";
+import { useDispatch } from "react-redux";
+import { patchCommentLike } from "app/postsSlice";
 
-const Comment = ({ comment, token, loggedInUserId, patchCommentLike }) => {
+const Comment = ({ comment, token, loggedInUserId, postId }) => {
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+
   const { palette } = useTheme();
   const main = palette.neutral.main;
 
+  const dispatch = useDispatch();
   const isLiked = Boolean(comment.likes[loggedInUserId]);
   const likeCount = Object.keys(comment.likes).length;
+  const commentId = comment._id;
 
   const getCommentAuthorInfo = async () => {
     const response = await fetch(
@@ -48,7 +53,7 @@ const Comment = ({ comment, token, loggedInUserId, patchCommentLike }) => {
               gap: "0.5rem",
             }}
           >
-            <UserImage pictureKey={userInfo.pictureKey} size="40px" />
+            <UserImage pictureKey={userInfo.pictureKey} size="30px" />
             <Typography>{`${userInfo.firstName} ${userInfo.lastName}`}</Typography>
           </Box>
 
@@ -63,7 +68,11 @@ const Comment = ({ comment, token, loggedInUserId, patchCommentLike }) => {
               {comment.content}
             </Typography>
             <FlexBetween>
-              <IconButton onClick={() => patchCommentLike(comment._id)}>
+              <IconButton
+                onClick={() =>
+                  dispatch(patchCommentLike({ commentId, postId }))
+                }
+              >
                 {isLiked ? (
                   <FavoriteOutlined sx={{ color: "red" }} />
                 ) : (
