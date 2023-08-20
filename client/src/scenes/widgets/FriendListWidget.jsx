@@ -19,7 +19,7 @@ const FriendListWidget = ({ userId }) => {
   // we only need to get friends if the friend list widget is not for the logged in user, do not dispatch to store
   const getFriends = async () => {
     const response = await fetch(
-      `http://localhost:3001/users/${userId}/friends`,
+      `http://54.196.53.241:6001/users/${userId}/friends`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },

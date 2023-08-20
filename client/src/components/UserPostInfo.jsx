@@ -1,5 +1,5 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, Icon, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
@@ -68,7 +68,8 @@ const UserPostInfo = ({
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                gap: "0.25rem",
+                gap: "0rem",
+                padding: "0rem",
               }}
             >
               <Typography
@@ -76,6 +77,7 @@ const UserPostInfo = ({
                 variant="h5"
                 fontWeight="500"
                 sx={{
+                  marginLeft: "-0.3rem",
                   "&:hover": {
                     color: palette.primary.light,
                     cursor: "pointer",
@@ -90,21 +92,25 @@ const UserPostInfo = ({
                 <Box
                   sx={{
                     display: "flex",
-                    gap: "0.1rem",
+                    gap: "0.3rem",
                     flexDirection: "row",
                     alignItems: "center",
                     color: palette.neutral.mediumMain,
                   }}
                 >
-                  <AccessTimeIcon />
-                  <Typography variant="h7" fontWeight="300">
+                  <AccessTimeIcon fontSize="10px" size={"small"} />
+                  <Typography variant="h6" fontWeight="300">
                     {time}
                   </Typography>
                 </Box>
               </>
             ) : null}
           </Box>
-          <Typography color={medium} fontSize="0.75rem">
+          <Typography
+            color={medium}
+            fontSize="0.75rem"
+            sx={{ marginLeft: "-0.3rem" }}
+          >
             {subtitle}
           </Typography>
         </Box>

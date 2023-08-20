@@ -6,8 +6,12 @@ import { uploadFile } from "../s3.js";
 /* REGISTER USER */
 export const register = async (req, res) => {
     try {
-        const file = req.file;
-        const result = await uploadFile(file);
+        let result;
+        if (req.file) {
+            const file = req.file;
+            result = await uploadFile(file);
+        }
+
         const {
             firstName,
             lastName,
@@ -22,6 +26,8 @@ export const register = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
 
         const newEmail = email.toLowerCase();
+
+
         /* TODO: add default picture path is none is provided*/
 
         const newUser = new User({
@@ -29,7 +35,7 @@ export const register = async (req, res) => {
             lastName,
             email: newEmail,
             password: passwordHash,
-            pictureKey: result.Key,
+            pictureKey: req.file ? result.Key : "f516ddf3458951425013d41b0a9742b0",
             friends,
             location,
             occupation,

@@ -18,7 +18,7 @@ const ProfilePage = () => {
 
   const isSelf = loggedInUserId === userId;
   const getUser = async () => {
-    const response = await fetch(`http://localhost:3001/users/${userId}`, {
+    const response = await fetch(`http://54.196.53.241:6001/users/${userId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });

@@ -13,7 +13,7 @@ const initialState = {
 export const patchFriend = createAsyncThunk('user/patchFriend', async (authorId, { getState }) => {
     const state = getState();
     const response = await fetch(
-        `http://localhost:3001/users/${state.user.user._id}/${authorId}`,
+        `http://http://54.196.53.241:6001/users/${state.user.user._id}/${authorId}`,
         {
             method: "PATCH",
             headers: { Authorization: `Bearer ${state.user.token}` },

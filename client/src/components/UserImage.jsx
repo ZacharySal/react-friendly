@@ -23,7 +23,7 @@ const UserImage = ({
           width={size}
           height={size}
           alt="user"
-          src={`http://localhost:3001/posts/image/${pictureKey}`}
+          src={`http://54.196.53.241:6001/posts/image/${pictureKey}`}
         />
       )}
       {isPost && !isSelf && (
