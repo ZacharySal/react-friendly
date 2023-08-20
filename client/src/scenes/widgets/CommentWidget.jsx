@@ -20,7 +20,7 @@ const Comment = ({ comment, token, loggedInUserId, postId }) => {
 
   const getCommentAuthorInfo = async () => {
     const response = await fetch(
-      `http://54.196.53.241:6001/users/${comment.userId}`,
+      `https://twitter-clone-node-server-production.up.railway.app/users/${comment.userId}`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },

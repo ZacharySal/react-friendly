@@ -8,7 +8,7 @@ const initialState = {
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async (args = null, { getState }) => {
     const state = getState();
-    const response = await fetch("http://54.196.53.241:6001/posts", {
+    const response = await fetch("https://twitter-clone-node-server-production.up.railway.app/posts", {
         method: "GET",
         headers: { Authorization: `Bearer ${state.user.token}` },
     });
@@ -18,7 +18,7 @@ export const fetchPosts = createAsyncThunk("posts/fetchPosts", async (args = nul
 
 export const addPost = createAsyncThunk("posts/addPost", async (formData, { getState }) => {
     const state = getState();
-    const response = await fetch(`http://54.196.53.241:6001/posts`, {
+    const response = await fetch(`https://twitter-clone-node-server-production.up.railway.app/posts`, {
         method: "POST",
         headers: { Authorization: `Bearer ${state.user.token}` },
         body: formData,
@@ -29,7 +29,7 @@ export const addPost = createAsyncThunk("posts/addPost", async (formData, { getS
 
 export const patchLike = createAsyncThunk("posts/patchLike", async (postId, { getState }) => {
     const state = getState();
-    const response = await fetch(`http://54.196.53.241:6001/posts/${postId}/like`, {
+    const response = await fetch(`https://twitter-clone-node-server-production.up.railway.app/posts/${postId}/like`, {
         method: "PATCH",
         headers: {
             Authorization: `Bearer ${state.user.token}`,
@@ -43,7 +43,7 @@ export const patchLike = createAsyncThunk("posts/patchLike", async (postId, { ge
 
 export const patchComment = createAsyncThunk("posts/patchComment", async (postInfo, { getState }) => {
     const state = getState();
-    const response = await fetch(`http://54.196.53.241:6001/posts/${postInfo.postId}/comment`, {
+    const response = await fetch(`https://twitter-clone-node-server-production.up.railway.app/posts/${postInfo.postId}/comment`, {
         method: "PATCH",
         headers: {
             Authorization: `Bearer ${state.user.token}`,
@@ -57,7 +57,7 @@ export const patchComment = createAsyncThunk("posts/patchComment", async (postIn
 
 export const patchCommentLike = createAsyncThunk("posts/patchCommentLike", async (postInfo, { getState }) => {
     const state = getState();
-    const response = await fetch(`http://54.196.53.241:6001/posts/comment/${postInfo.commentId}/like`, {
+    const response = await fetch(`https://twitter-clone-node-server-production.up.railway.app/posts/comment/${postInfo.commentId}/like`, {
         method: "PATCH",
         headers: {
             Authorization: `Bearer ${state.user.token}`,

@@ -18,10 +18,13 @@ const ProfilePage = () => {
 
   const isSelf = loggedInUserId === userId;
   const getUser = async () => {
-    const response = await fetch(`http://54.196.53.241:6001/users/${userId}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `https://twitter-clone-node-server-production.up.railway.app/users/${userId}`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     const data = await response.json();
     setIsLoading(false);
     setUser(data);

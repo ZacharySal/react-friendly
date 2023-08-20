@@ -61,7 +61,7 @@ const Form = ({ setErrorMsg }) => {
     }
 
     const savedUserResponse = await fetch(
-      "http://54.196.53.241:6001/auth/register",
+      "https://twitter-clone-node-server-production.up.railway.app/auth/register",
       {
         method: "POST",
         body: formData,
@@ -78,7 +78,7 @@ const Form = ({ setErrorMsg }) => {
 
   const login = async (values, onSubmitProps) => {
     const loggedInResponse = await fetch(
-      "http://54.196.53.241:6001/auth/login",
+      "https://twitter-clone-node-server-production.up.railway.app/auth/login",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -58,7 +58,7 @@ const PostWidget = ({
 
   const getAuthorInfo = async () => {
     const response = await fetch(
-      `http://54.196.53.241:6001/users/${postUserId}`,
+      `https://twitter-clone-node-server-production.up.railway.app/users/${postUserId}`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
@@ -99,7 +99,7 @@ const PostWidget = ({
               height="auto"
               alt="post"
               style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-              src={`http://54.196.53.241:6001/posts/image/${postPictureKey}`}
+              src={`https://twitter-clone-node-server-production.up.railway.app/posts/image/${postPictureKey}`}
             />
           )}
           <FlexBetween mt="0.25rem">
