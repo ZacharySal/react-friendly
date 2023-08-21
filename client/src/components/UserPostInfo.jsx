@@ -1,10 +1,9 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { Box, Typography, Icon, useTheme } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
-import { useMediaQuery } from "@mui/material";
 
 const UserPostInfo = ({
   authorId,
@@ -16,14 +15,11 @@ const UserPostInfo = ({
 }) => {
   const navigate = useNavigate();
   const loggedInUserId = useSelector((state) => state.user.user._id);
-  const token = useSelector((state) => state.user.token);
   const friends = useSelector((state) => state.user.user.friends);
 
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
-
-  const isDesktopScreen = useMediaQuery("(min-width:1000px)");
 
   const isFriend = friends.find((friend) => friend._id === authorId);
   const isSelf = authorId === loggedInUserId;
@@ -51,7 +47,6 @@ const UserPostInfo = ({
           sx={{ width: "100%" }}
           onClick={() => {
             navigate(`/profile/${authorId}`);
-            /* TODO: Investigate hack */
           }}
         >
           <Box
