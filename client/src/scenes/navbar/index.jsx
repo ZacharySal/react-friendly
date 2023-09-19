@@ -1,6 +1,4 @@
-import { useState } from "react";
 import {
-  Box,
   IconButton,
   InputBase,
   Typography,
@@ -10,24 +8,13 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import {
-  Search,
-  Message,
-  DarkMode,
-  LightMode,
-  Notifications,
-  Help,
-  Menu,
-  Close,
-  LogoutOutlined,
-} from "@mui/icons-material";
+import { DarkMode, LightMode, LogoutOutlined } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "app/userSlice";
 import FlexBetween from "components/FlexBetween";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.user);
@@ -36,12 +23,9 @@ const Navbar = () => {
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
   const dark = theme.palette.neutral.dark;
-  const background = theme.palette.background;
   const alt = theme.palette.background.alt;
 
   const fullName = `${user.firstName} ${user.lastName}`;
-
-  /* TODO: Fix mobile navigation bc it looks like shit */
 
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
