@@ -8,12 +8,7 @@ const LoginPage = () => {
   const isDesktopScreen = useMediaQuery("(min-width: 1000px)");
   return (
     <Box>
-      <Box
-        width="100%"
-        backgroundColor={theme.palette.background.alt}
-        p="1rem 6%"
-        textAlign="center"
-      >
+      <Box width="100%" backgroundColor={theme.palette.background.alt} p="1rem 6%" textAlign="center">
         <Typography fontWeight="bold" fontSize="32px" color="primary">
           Friendly
         </Typography>
@@ -29,6 +24,10 @@ const LoginPage = () => {
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
           Welcome to Friendly!
         </Typography>
+        <Box backgroundColor={theme.palette.background.default} p="1rem" mb="1rem">
+          <Typography variant="h6">Demo Email: demo@gmail.com</Typography>
+          <Typography variant="h6">Demo Password: demo123</Typography>
+        </Box>
         {errorMsg && (
           <Alert severity="error" sx={{ fontSize: "inherit", mb: "1.5rem" }}>
             {errorMsg}

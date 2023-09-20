@@ -5,14 +5,7 @@ import { useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 
-const UserPostInfo = ({
-  authorId,
-  name,
-  subtitle,
-  pictureKey,
-  time = null,
-  isPost = true,
-}) => {
+const UserPostInfo = ({ authorId, name, subtitle, pictureKey, time = null, isPost = true }) => {
   const navigate = useNavigate();
   const loggedInUserId = useSelector((state) => state.user.user._id);
   const friends = useSelector((state) => state.user.user.friends);
@@ -87,13 +80,14 @@ const UserPostInfo = ({
                 <Box
                   sx={{
                     display: "flex",
-                    gap: "0.1rem",
+                    gap: "0.3rem",
                     flexDirection: "row",
+                    justifyContent: "center",
                     alignItems: "center",
                     color: palette.neutral.mediumMain,
                   }}
                 >
-                  <AccessTimeIcon fontSize="10px" size={"small"} />
+                  <AccessTimeIcon fontSize="10px" sx={{ marginBottom: "2px" }} />
                   <Typography variant="h6" fontWeight="300">
                     {time}
                   </Typography>
@@ -101,11 +95,7 @@ const UserPostInfo = ({
               </>
             ) : null}
           </Box>
-          <Typography
-            color={medium}
-            fontSize="0.75rem"
-            sx={{ marginLeft: "-0.3rem" }}
-          >
+          <Typography color={medium} fontSize="0.75rem" sx={{ marginLeft: "-0.3rem" }}>
             {subtitle}
           </Typography>
         </Box>
