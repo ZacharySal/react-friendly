@@ -1,34 +1,26 @@
-import {
-  EditOutlined,
-  LocationOnOutlined,
-  WorkOutlineOutlined,
-} from "@mui/icons-material";
-import { Box, Typography, Divider, useTheme } from "@mui/material";
-import UserImage from "components/UserImage";
+import { EditOutlined, LocationOnOutlined, WorkOutlineOutlined } from "@mui/icons-material";
+import { Box, Divider, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
+import UserImage from "components/UserImage";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
-const UserInfoWidget = ({ userId, pictureKey }) => {
+const UserInfoWidget = ({ userId, picture_key }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
   const { palette } = useTheme();
-  const navigate = useNavigate();
   const token = useSelector((state) => state.user.token);
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
 
   const getUser = async () => {
-    const response = await fetch(
-      `https://twitter-clone-node-server-production.up.railway.app/users/${userId}`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`http://localhost:6001/users/${userId}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await response.json();
     setUser(data);
     setIsLoading(false);
@@ -42,46 +34,36 @@ const UserInfoWidget = ({ userId, pictureKey }) => {
     return null;
   }
 
-  const {
-    firstName,
-    lastName,
-    location,
-    occupation,
-    viewedProfile,
-    impressions,
-    friends,
-  } = user;
+  const { first_name, last_name, display_name, location, occupation } = user;
 
   return (
     <>
       {!isLoading && (
-        <WidgetWrapper>
+        <WidgetWrapper height="100%" width="100%">
           {/* FIRST ROW */}
-          <FlexBetween
-            gap="0.25rem"
-            pb="1rem"
-            onClick={() => navigate(`/profile/${userId}`)}
-          >
-            <FlexBetween gap="1rem">
-              <UserImage pictureKey={pictureKey} />
-              <Box>
-                <Typography
-                  variant="h4"
-                  color={dark}
-                  fontWeight="500"
-                  sx={{
-                    "&:hover": {
-                      color: palette.primary.light,
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  {firstName} {lastName}
-                </Typography>
-                <Typography color={medium}>{friends.length} friends</Typography>
-              </Box>
+          <Link to={`/profile/${userId}`}>
+            <FlexBetween gap="0.25rem" pb="1rem">
+              <FlexBetween gap="1rem">
+                <UserImage picture_key={picture_key} />
+                <Box>
+                  <Typography
+                    variant="h4"
+                    color={dark}
+                    fontWeight="500"
+                    sx={{
+                      "&:hover": {
+                        color: palette.primary.main,
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    @{display_name}
+                  </Typography>
+                  <Typography color={medium}>{`${first_name} ${last_name}`}</Typography>
+                </Box>
+              </FlexBetween>
             </FlexBetween>
-          </FlexBetween>
+          </Link>
 
           <Divider />
 
@@ -100,24 +82,7 @@ const UserInfoWidget = ({ userId, pictureKey }) => {
           <Divider />
 
           {/* THIRD ROW */}
-          <Box p="1rem 0">
-            <FlexBetween mb="0.5rem">
-              <Typography color={medium}>Who's viewed your profile</Typography>
-              <Typography color={medium} fontWeight="500">
-                {viewedProfile}
-              </Typography>
-            </FlexBetween>
-            <FlexBetween>
-              <Typography color={medium}>Impressions of your post</Typography>
-              <Typography color={medium} fontWeight="500">
-                {impressions}
-              </Typography>
-            </FlexBetween>
-          </Box>
 
-          <Divider />
-
-          {/* FOURTH ROW */}
           <Box p="1rem 0">
             <Typography fontSize="1rem" color={main} fontWeight="500" mb="1rem">
               Social Profiles

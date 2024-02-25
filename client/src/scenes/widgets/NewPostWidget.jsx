@@ -1,74 +1,129 @@
 import {
-  EditOutlined,
   DeleteOutlined,
+  EditCalendarOutlined,
+  EditOutlined,
+  EmojiEmotionsOutlined,
+  FormatListBulletedOutlined,
   GifBoxOutlined,
   ImageOutlined,
 } from "@mui/icons-material";
-import {
-  Box,
-  Divider,
-  Typography,
-  InputBase,
-  Button,
-  IconButton,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import Dropzone from "react-dropzone";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { Box, Button, IconButton, InputBase, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import UserImage from "components/UserImage";
-import WidgetWrapper from "components/WidgetWrapper";
-import { addPost } from "app/postsSlice";
+import { useState } from "react";
+import Dropzone from "react-dropzone";
+import { useDispatch, useSelector } from "react-redux";
+import { addPost } from "store/postsSlice";
 
-const NewPostWidget = ({ pictureKey }) => {
+const NewPostWidget = ({ picture_key }) => {
   const dispatch = useDispatch();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
   const [post, setPost] = useState("");
   const { palette } = useTheme();
-  const { _id } = useSelector((state) => state.user.user);
-  const isDesktopScreen = useMediaQuery("(min-width:1000px)");
-  const mediumMain = palette.neutral.mediumMain;
+  const { id } = useSelector((state) => state.user.user);
   const medium = palette.neutral.medium;
 
   const handlePost = async () => {
     const formData = new FormData();
-    formData.append("userId", _id);
+    formData.append("user_id", id);
     formData.append("content", post);
+    formData.append("isRepost", false);
+
     if (image) {
       formData.append("picture", image);
     }
-    dispatch(addPost(formData));
+    dispatch(addPost({ formData }));
     setImage(null);
     setPost("");
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      if (post) handlePost();
+    }
+  };
+
   return (
-    <WidgetWrapper>
-      <FlexBetween gap={isDesktopScreen ? "1.5rem" : "0.75rem"}>
-        <UserImage pictureKey={pictureKey} />
+    <Box
+      display="grid"
+      gridTemplateColumns="auto 1fr"
+      gap="1rem"
+      padding="1rem 1.5rem 0.75rem 1rem"
+      borderBottom={`1px solid ${palette.neutral.light}`}
+    >
+      <UserImage picture_key={picture_key} size="40px" />
+      <Box marginTop="3px">
         <InputBase
+          multiline
+          fullWidth
           placeholder="What's on your mind?"
           onChange={(e) => setPost(e.target.value)}
+          onKeyDown={handleKeyPress}
           value={post}
-          sx={{
-            width: "100%",
-            backgroundColor: palette.neutral.light,
-            borderRadius: "2rem",
-            padding: "0.8rem 1.25rem",
-            fontSize: isDesktopScreen ? "0.8rem" : "0.75rem",
-          }}
+          sx={{ fontSize: "16px" }}
         />
-      </FlexBetween>
-      {isImage && (
+
+        {/* {post.length > 0 && (
+          <Box marginTop="1rem" display="flex" alignItems="center" gap="0.25rem">
+            <PublicOutlined sx={{ color: palette.primary.main }} />
+            <Typography fontWeight="600" color={palette.primary.main} variant="h7">
+              Everyone can view and reply
+            </Typography>
+          </Box>
+        )} */}
+
         <Box
-          border={`1px solid ${medium}`}
-          borderRadius="5px"
-          mt="1rem"
-          p="1rem"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "1rem",
+            gap: "0.5rem",
+          }}
         >
+          <Box display="flex" gap="1rem">
+            <ImageOutlined
+              fontSize="medium"
+              onClick={() => setIsImage(!isImage)}
+              sx={{ color: palette.primary.main }}
+            />
+            <GifBoxOutlined
+              fontSize="medium"
+              onClick={() => setIsImage(!isImage)}
+              sx={{ color: palette.primary.main }}
+            />
+            <FormatListBulletedOutlined sx={{ color: palette.primary.main }} />
+            <EmojiEmotionsOutlined sx={{ color: palette.primary.main }} />
+            <EditCalendarOutlined sx={{ color: palette.primary.main }} />
+          </Box>
+          <Box display="flex" alignItems="center" gap="1rem">
+            {post.length > 0 && (
+              <Typography
+                color={post.length === 260 ? "#900D09" : palette.neutral.medium}
+                variant="h6"
+              >
+                {260 - Number(post.length)}/260
+              </Typography>
+            )}
+
+            <Button
+              disabled={!post}
+              onClick={handlePost}
+              sx={{
+                color: "white",
+                backgroundColor: palette.primary.main,
+                borderRadius: "3rem",
+                fontWeight: "800",
+              }}
+            >
+              POST
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+      {isImage && (
+        <Box border={`1px solid ${medium}`} borderRadius="5px" mt="1rem" p="1rem">
           <Dropzone
             acceptedFiles="image/jpeg,image/png,image/gif"
             accept={{
@@ -83,14 +138,16 @@ const NewPostWidget = ({ pictureKey }) => {
               <FlexBetween>
                 <Box
                   {...getRootProps()}
-                  border={`2px solid ${palette.primary.main}`}
+                  border={`2px dotted ${palette.primary.main}`}
                   p="1rem"
                   width="100%"
                   sx={{ "&:hover": { cursor: "pointer" } }}
                 >
                   <input {...getInputProps()} />
                   {!image ? (
-                    <p>Add Attatchment Here</p>
+                    <Typography variant="h8" fontWeight="400" color={palette.neutral.medium}>
+                      Click to upload attatchment
+                    </Typography>
                   ) : (
                     <FlexBetween>
                       <Typography>{image.name}</Typography>
@@ -99,10 +156,7 @@ const NewPostWidget = ({ pictureKey }) => {
                   )}
                 </Box>
                 {image && (
-                  <IconButton
-                    onClick={() => setImage(null)}
-                    sx={{ width: "15%" }}
-                  >
+                  <IconButton onClick={() => setImage(null)} sx={{ width: "15%" }}>
                     <DeleteOutlined />
                   </IconButton>
                 )}
@@ -111,52 +165,7 @@ const NewPostWidget = ({ pictureKey }) => {
           </Dropzone>
         </Box>
       )}
-
-      <Divider sx={{ margin: "1.25rem 0" }} />
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          alignItems: "center",
-        }}
-      >
-        <FlexBetween gap="0.25rem" onClick={() => setIsImage(!isImage)}>
-          <ImageOutlined sx={{ color: mediumMain }} />
-          <Typography
-            color={mediumMain}
-            sx={{ "&:hover": { cursor: "pointer", color: medium } }}
-          >
-            Image
-          </Typography>
-        </FlexBetween>
-        {isDesktopScreen && (
-          <>
-            <FlexBetween gap="0.25rem" onClick={() => setIsImage(!isImage)}>
-              <GifBoxOutlined sx={{ color: mediumMain }} />
-              <Typography
-                color={mediumMain}
-                sx={{ "&:hover": { cursor: "pointer", color: medium } }}
-              >
-                GIF
-              </Typography>
-            </FlexBetween>
-          </>
-        )}
-
-        <Button
-          disabled={!post}
-          onClick={handlePost}
-          sx={{
-            color: palette.background.alt,
-            backgroundColor: palette.primary.main,
-            borderRadius: "3rem",
-          }}
-        >
-          POST
-        </Button>
-      </Box>
-    </WidgetWrapper>
+    </Box>
   );
 };
 

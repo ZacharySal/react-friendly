@@ -1,35 +1,36 @@
-import { useState } from "react";
-import { Box, Button, TextField, useMediaQuery, Typography, useTheme } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { Formik } from "formik";
-import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setLogin } from "app/userSlice";
-import Dropzone from "react-dropzone";
+import { Box, Button, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
+import { Formik } from "formik";
+import { useState } from "react";
+import Dropzone from "react-dropzone";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { setLogin } from "store/userSlice";
+import * as Yup from "yup";
 
-const registerSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
-  location: yup.string().required("required"),
-  occupation: yup.string().required("required"),
-  picture: yup.string(),
+const registerSchema = Yup.object().shape({
+  firstName: Yup.string().required("required"),
+  lastName: Yup.string().required("required"),
+  displayName: Yup.string().required("required"),
+  email: Yup.string().email("invalid email").required("required"),
+  password: Yup.string().required("required"),
+  passwordConfirmation: Yup.string().oneOf([Yup.ref("password")], "Passwords must match"),
+  picture: Yup.string(),
 });
 
-const loginSchema = yup.object().shape({
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
+const loginSchema = Yup.object().shape({
+  email: Yup.string().email("invalid email").required("required"),
+  password: Yup.string().required("required"),
 });
 
 const initialValuesRegister = {
   firstName: "",
   lastName: "",
+  displayName: "",
   email: "",
   password: "",
-  occupation: "",
+  passwordConfirmation: "",
   picture: "",
 };
 
@@ -53,13 +54,10 @@ const Form = ({ setErrorMsg }) => {
       formData.append(value, values[value]);
     }
 
-    const savedUserResponse = await fetch(
-      "https://twitter-clone-node-server-production.up.railway.app/auth/register",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    const savedUserResponse = await fetch("http://localhost:6001/auth/register", {
+      method: "POST",
+      body: formData,
+    });
 
     const savedUser = await savedUserResponse.json();
     onSubmitProps.resetForm();
@@ -70,14 +68,11 @@ const Form = ({ setErrorMsg }) => {
   };
 
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch(
-      "https://twitter-clone-node-server-production.up.railway.app/auth/login",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      }
-    );
+    const loggedInResponse = await fetch("http://localhost:6001/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
     const loggedIn = await loggedInResponse.json();
     onSubmitProps.resetForm();
     if (loggedInResponse.status === 200) {
@@ -146,23 +141,13 @@ const Form = ({ setErrorMsg }) => {
                   sx={{ gridColumn: "span 1" }}
                 />
                 <TextField
-                  label="Location"
+                  label="Display Name"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.location}
-                  name="location"
-                  error={Boolean(touched.location) && Boolean(errors.location)}
-                  helperText={touched.location && errors.location}
-                  sx={{ gridColumn: "span 2" }}
-                />
-                <TextField
-                  label="Occupation"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.occupation}
-                  name="occupation"
-                  error={Boolean(touched.occupation) && Boolean(errors.occupation)}
-                  helperText={touched.occupation && errors.occupation}
+                  value={values.displayName}
+                  name="displayName"
+                  error={Boolean(touched.displayName) && Boolean(errors.displayName)}
+                  helperText={touched.displayName && errors.displayName}
                   sx={{ gridColumn: "span 2" }}
                 />
                 <Box
@@ -196,31 +181,77 @@ const Form = ({ setErrorMsg }) => {
                     )}
                   </Dropzone>
                 </Box>
+                <TextField
+                  label="Email"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.email}
+                  name="email"
+                  error={Boolean(touched.email) && Boolean(errors.email)}
+                  helperText={touched.email && errors.email}
+                  sx={{ gridColumn: "span 2" }}
+                />
+
+                <TextField
+                  label="Password"
+                  type="password"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.password}
+                  name="password"
+                  error={Boolean(touched.password) && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
+                  sx={{ gridColumn: "span 2" }}
+                />
+                <TextField
+                  label="Verify Password"
+                  type="password"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.passwordConfirmation}
+                  name="passwordConfirmation"
+                  error={
+                    Boolean(touched.passwordConfirmation) && Boolean(errors.passwordConfirmation)
+                  }
+                  helperText={touched.passwordConfirmation && errors.passwordConfirmation}
+                  sx={{ gridColumn: "span 2" }}
+                />
               </>
             )}
-
-            <TextField
-              label="Email"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.email}
-              name="email"
-              error={Boolean(touched.email) && Boolean(errors.email)}
-              helperText={touched.email && errors.email}
-              sx={{ gridColumn: "span 2" }}
-            />
-            <TextField
-              label="Password"
-              type="password"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.password}
-              name="password"
-              error={Boolean(touched.password) && Boolean(errors.password)}
-              helperText={touched.password && errors.password}
-              sx={{ gridColumn: "span 2" }}
-            />
           </Box>
+
+          {isLogin && (
+            <Box
+              display="grid"
+              gap="30px"
+              gridTemplateColumns="repeat(2, minmax(0,1fr))"
+              sx={{
+                "& > div": { gridColumn: isDesktopScreen ? undefined : "span 2" },
+              }}
+            >
+              <TextField
+                label="Email"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.email}
+                name="email"
+                error={Boolean(touched.email) && Boolean(errors.email)}
+                helperText={touched.email && errors.email}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                label="Password"
+                type="password"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.password}
+                name="password"
+                error={Boolean(touched.password) && Boolean(errors.password)}
+                helperText={touched.password && errors.password}
+                sx={{ gridColumn: "span 2" }}
+              />
+            </Box>
+          )}
 
           <Box>
             <Button

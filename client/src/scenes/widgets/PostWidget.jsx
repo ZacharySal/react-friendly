@@ -1,178 +1,256 @@
 import {
+  BookmarkBorder,
   ChatBubbleOutlineOutlined,
   FavoriteBorderOutlined,
   FavoriteOutlined,
-  ShareOutlined,
 } from "@mui/icons-material";
-import SendIcon from "@mui/icons-material/Send";
-import {
-  Box,
-  Divider,
-  IconButton,
-  InputBase,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import { Box, Typography, useTheme } from "@mui/material";
+import AlertMessage from "components/AlertMessage";
+import PostStatistic from "components/PostStatistic";
+import RepostButton from "components/RepostButton";
+import UserImage from "components/UserImage";
+import { ModalContext } from "contexts/ModalContext";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
-import FlexBetween from "components/FlexBetween";
-import Comment from "./CommentWidget";
-import WidgetWrapper from "components/WidgetWrapper";
-import { useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { patchLike, patchComment } from "app/postsSlice";
-import UserPostInfo from "components/UserPostInfo";
+import { useNavigate } from "react-router-dom";
+import { deletePost, patchLike, patchSave } from "store/postsSlice";
+import { useSWRConfig } from "swr";
 
 const PostWidget = ({
-  postId,
-  postUserId,
-  content,
-  location,
-  postPictureKey,
-  likes,
-  comments,
-  createdAt,
+  post,
+  postPageId = null,
+  isPostPage = false,
+  isChain = false,
+  modalView = false,
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isComments, setIsComments] = useState(false);
-  const [authorInfo, setAuthorInfo] = useState({});
-  const [commentValue, setCommentValue] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   TimeAgo.addLocale(en);
   const timeAgo = new TimeAgo("en-US");
-  const time = timeAgo.format(new Date(createdAt), "twitter");
+  const time = timeAgo.format(new Date(post.created_at), "twitter");
 
+  const { mutate } = useSWRConfig();
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.user.token);
-  const loggedInUserId = useSelector((state) => state.user.user._id);
-
-  const isLiked = Boolean(likes[loggedInUserId]);
-  const likeCount = Object.keys(likes).length;
-
+  const navigate = useNavigate();
   const { palette } = useTheme();
-  const main = palette.neutral.main;
+  const { setModalContext } = useContext(ModalContext);
 
-  //console.log("Post picture key in post widget: ", postPictureKey);
+  const loggedInUserId = useSelector((state) => state.user.user.id);
 
-  const getAuthorInfo = async () => {
-    const response = await fetch(
-      `https://twitter-clone-node-server-production.up.railway.app/users/${postUserId}`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    setAuthorInfo(data);
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    getAuthorInfo();
-  }, []); //eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      patchComment();
-    }
-  };
+  const isLiked = Boolean(post?.likes?.some((post) => post.user_id === loggedInUserId));
+  const isSaved = Boolean(post?.saves?.some((save) => save.user_id === loggedInUserId));
+  const repostCount = post?.children?.filter((post) => post?.isRepost)?.length;
 
   return (
-    <>
-      {!isLoading && (
-        <WidgetWrapper m="1rem 0">
-          <UserPostInfo
-            authorId={postUserId}
-            name={`${authorInfo.firstName} ${authorInfo.lastName}`}
-            subtitle={location}
-            pictureKey={authorInfo.pictureKey}
-            time={time}
-          />
-          <Typography color={main} sx={{ mt: "1rem" }}>
-            {content}
-          </Typography>
-          {postPictureKey && (
-            <img
-              width="100%"
-              height="auto"
-              alt="post"
-              style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-              src={`https://twitter-clone-node-server-production.up.railway.app/posts/image/${postPictureKey}`}
-            />
+    <Box
+      padding={modalView ? "0.75rem" : "0.75rem 1.5rem 0rem 1rem"}
+      width="100%"
+      cursor="pointer"
+      border={modalView ? `1px solid ${palette.neutral.light}` : null}
+      borderRadius={modalView ? "12px" : "0px"}
+      borderBottom={isChain || modalView ? null : `1px solid ${palette.neutral.light}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate(`/post/${post.id}`);
+      }}
+      sx={{
+        transition: "background-color 0.25s ease",
+        "&:hover": {
+          backgroundColor: palette.mode === "light" ? palette.neutral.light : "",
+          cursor: "pointer",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: modalView ? null : "auto 1fr",
+          gridTemplateRows: modalView ? "auto auto" : null,
+          gap: modalView ? "0.35rem" : "1rem",
+        }}
+      >
+        <Box
+          display={modalView ? "flex" : "grid"}
+          gap={modalView ? "0.5rem" : null}
+          gridTemplateRows={modalView ? null : "auto 1fr"}
+        >
+          <UserImage picture_key={post.author.picture_key} size={modalView ? "25px" : "40px"} />
+          {isChain && (
+            <Box
+              sx={{
+                position: "relative",
+                top: "1px",
+                left: "50%",
+                width: "2.5px",
+                height: "116%",
+                transform: "translateX(-50%)",
+                backgroundColor: palette.neutral.light,
+              }}
+            ></Box>
           )}
-          <FlexBetween mt="0.25rem">
-            <FlexBetween gap="1rem">
-              <FlexBetween>
-                <IconButton onClick={() => dispatch(patchLike(postId))}>
-                  {isLiked ? (
-                    <FavoriteOutlined sx={{ color: "red" }} />
-                  ) : (
-                    <FavoriteBorderOutlined />
-                  )}
-                </IconButton>
-                <Typography>{likeCount}</Typography>
-              </FlexBetween>
+          {modalView && <AuthorInfo author={post.author} time={time} />}
+        </Box>
 
-              <FlexBetween>
-                <IconButton onClick={() => setIsComments(!isComments)}>
-                  <ChatBubbleOutlineOutlined />
-                </IconButton>
-                <Typography>{comments.length}</Typography>
-              </FlexBetween>
-            </FlexBetween>
-
-            <IconButton>
-              {/* REPLACE */}
-              <ShareOutlined />
-            </IconButton>
-          </FlexBetween>
-          {isComments && (
-            <Box mt="0.5rem">
-              {comments.map((comment, i) => (
-                <Comment
-                  key={comment._id}
-                  comment={comment}
-                  token={token}
-                  loggedInUserId={loggedInUserId}
-                  postId={postId}
-                />
-              ))}
-
-              <Divider />
-              {/* ADD COMMENT */}
-              <Box
-                sx={{
-                  width: "100%",
-                  marginTop: "0.5rem",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  backgroundColor: palette.neutral.light,
-                  borderRadius: "2rem",
-                  padding: "0.5rem 1.25rem",
-                }}
-              >
-                <InputBase
-                  fullWidth
-                  sx={{}}
-                  placeholder="Add a comment"
-                  onChange={(e) => setCommentValue(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                />
-                <IconButton
-                  onClick={() =>
-                    dispatch(patchComment({ postId, commentValue }))
-                  }
-                >
-                  <SendIcon />
-                </IconButton>
-              </Box>
+        <Box flexDirection="column">
+          {!modalView && <AuthorInfo author={post.author} time={time} />}
+          {post.parent_id && !isPostPage && !post.isRepost && (
+            <Box display="flex" alignItems="center" gap="0.2rem" mb="0.25rem">
+              <Typography variant="h7" color={palette.neutral.medium}>
+                Replying to
+              </Typography>
+              <Typography variant="h7" fontWeight="500" color={palette.primary.main}>
+                @{modalView ? post.author.display_name : post.parent?.author?.display_name}
+              </Typography>
             </Box>
           )}
-        </WidgetWrapper>
+          <Typography variant="h5" lineHeight="1.4">
+            {post.content}
+          </Typography>
+          {post.isRepost && !modalView && !isPostPage && (
+            <Box mt="0.5rem">
+              <PostWidget post={post.parent} modalView={true} />
+            </Box>
+          )}
+          {!modalView && (
+            <Box
+              display="flex"
+              mt="0.5rem"
+              marginLeft="-5px"
+              width="100%"
+              alignItems="flex-start"
+              justifyContent="space-between"
+            >
+              <PostStatistic
+                hoverColor={palette.primary.main}
+                name="Reply"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setModalContext({
+                    show: true,
+                    type: "reply",
+                    post: post,
+                  });
+                }}
+              >
+                <ChatBubbleOutlineOutlined
+                  sx={{ fontSize: "18px", color: palette.neutral.medium }}
+                />
+                <Typography
+                  marginLeft="0.35rem"
+                  variant="h7"
+                  sx={{ color: palette.neutral.medium }}
+                >
+                  {post.children?.length || "0"}
+                </Typography>
+              </PostStatistic>
+              <RepostButton
+                repostCount={repostCount}
+                handleQuoteClick={(e) => {
+                  e.stopPropagation();
+                  setModalContext({
+                    show: true,
+                    type: "quote",
+                    post: post,
+                  });
+                }}
+              />
+              <PostStatistic
+                hoverColor="rgb(229,24,128)"
+                name="Likes"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dispatch(
+                    patchLike({
+                      post_id: post.id,
+                      parent_id: isPostPage ? postPageId : post.parent_id,
+                      mutate,
+                    })
+                  );
+                }}
+              >
+                {isLiked ? (
+                  <FavoriteOutlined sx={{ color: "rgb(229,24,128)", fontSize: "18px" }} />
+                ) : (
+                  <FavoriteBorderOutlined
+                    sx={{ color: palette.neutral.medium, fontSize: "18px" }}
+                  />
+                )}
+                <Typography
+                  marginLeft="0.35rem"
+                  color={isLiked ? "rgb(229, 24, 128)" : palette.neutral.medium}
+                >
+                  {post.likes?.length ?? 0}
+                </Typography>
+              </PostStatistic>
+              <PostStatistic
+                hoverColor={palette.primary.main}
+                name="Saved"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dispatch(
+                    patchSave({
+                      post_id: post.id,
+                      parent_id: isPostPage ? postPageId : post.parent_id,
+                      mutate,
+                    })
+                  );
+                }}
+              >
+                {isSaved ? (
+                  <BookmarkIcon sx={{ color: palette.primary.main, fontSize: "18px" }} />
+                ) : (
+                  <BookmarkBorder sx={{ color: palette.neutral.medium, fontSize: "18px" }} />
+                )}
+
+                <Typography
+                  sx={{ color: isSaved ? palette.primary.main : palette.neutral.medium }}
+                  ml="0.25rem"
+                  variant="h6"
+                >
+                  {post.saves?.length || "0"}
+                </Typography>
+              </PostStatistic>
+            </Box>
+          )}
+        </Box>
+      </Box>
+      {showAlert && (
+        <AlertMessage
+          setShowAlert={setShowAlert}
+          confirmationAction={() => dispatch(deletePost(post.id))}
+          text={"Delete this post forever?"}
+        />
       )}
-    </>
+    </Box>
   );
 };
 
+const AuthorInfo = ({ author, time }) => {
+  const { palette } = useTheme();
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        flexWrap: "nowrap",
+        maxWidth: "100%",
+        overflow: "hidden",
+      }}
+    >
+      <Typography variant="h5" fontWeight="500" marginRight="0.25rem">
+        {`${author.first_name} ${author.last_name}`}
+      </Typography>
+      <Typography variant="h6" color={palette.neutral.medium}>
+        {` @${author.display_name} ∙`}
+      </Typography>
+      <Typography variant="h6" color={palette.neutral.medium}>
+        {time ?? ""}
+      </Typography>
+    </Box>
+  );
+};
 export default PostWidget;

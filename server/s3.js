@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config();
 import S3 from "aws-sdk/clients/s3.js";
-import fs from 'fs';
+import fs from "fs";
+
+dotenv.config();
 
 const bucketName = process.env.AWS_BUCKET_NAME;
 const region = process.env.AWS_BUCKET_REGION;
@@ -9,30 +10,40 @@ const accessKeyId = process.env.AWS_ACCESS_KEY;
 const secretAccessKey = process.env.AWS_SECRET_KEY;
 
 const s3 = new S3({
-    region,
-    accessKeyId,
-    secretAccessKey
+  region,
+  accessKeyId,
+  secretAccessKey,
 });
 
 // upload file to s3
 export const uploadFile = (file) => {
-    const fileStream = fs.createReadStream(file.path);
+  const fileStream = fs.createReadStream(file.path);
 
-    const uploadParams = {
-        Bucket: bucketName,
-        Body: fileStream,
-        Key: file.filename
-    };
+  const uploadParams = {
+    Bucket: bucketName,
+    Body: fileStream,
+    Key: file.filename,
+  };
 
-    return s3.upload(uploadParams).promise();
+  return s3.upload(uploadParams).promise();
+};
+
+// delete file from s3
+export const deleteFile = (picture_key) => {
+  const params = {
+    Bucket: bucketName,
+    Key: picture_key,
+  };
+
+  return s3.deleteObject(params).promise();
 };
 
 // download file from s3
 export const getFileStream = (fileKey) => {
-    const downloadParams = {
-        Key: fileKey,
-        Bucket: bucketName
-    };
+  const downloadParams = {
+    Bucket: bucketName,
+    Key: fileKey,
+  };
 
-    return s3.getObject(downloadParams).createReadStream();
+  return s3.getObject(downloadParams).createReadStream();
 };

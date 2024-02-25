@@ -1,106 +1,68 @@
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { Box, Typography, useTheme } from "@mui/material";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import FlexBetween from "./FlexBetween";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+import { Link } from "react-router-dom";
 import UserImage from "./UserImage";
 
-const UserPostInfo = ({ authorId, name, subtitle, pictureKey, time = null, isPost = true }) => {
-  const navigate = useNavigate();
-  const loggedInUserId = useSelector((state) => state.user.user._id);
-  const friends = useSelector((state) => state.user.user.friends);
+const UserPostInfo = ({ author, post }) => {
+  TimeAgo.addLocale(en);
+  const timeAgo = new TimeAgo("en-US");
+  const time = timeAgo.format(new Date(post.created_at), "twitter");
 
   const { palette } = useTheme();
-  const main = palette.neutral.main;
-  const medium = palette.neutral.medium;
-
-  const isFriend = friends.find((friend) => friend._id === authorId);
-  const isSelf = authorId === loggedInUserId;
 
   return (
-    <FlexBetween>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          width: "100%",
-          gap: "1rem",
-        }}
-      >
-        <UserImage
-          pictureKey={pictureKey}
-          size="55px"
-          isSelf={isSelf}
-          isPost={isPost}
-          isFriend={isFriend}
-          authorId={authorId}
-        />
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "auto 1fr",
+      }}
+    >
+      <UserImage picture_key={author.picture_key} size="40px" />
+      <Link sx={{ width: "100%" }} to={`/profile/${author.id}`}>
         <Box
-          sx={{ width: "100%" }}
-          onClick={() => {
-            navigate(`/profile/${authorId}`);
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            minwidth: "100%",
+            flexDirection: "row",
           }}
         >
           <Box
             sx={{
               display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              minwidth: "100%",
               flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "0rem",
-                padding: "0rem",
-              }}
+            <Typography
+              variant="h5"
+              fontWeight="500"
+              marginRight="0.25rem"
+              // sx={{
+              //   marginLeft: "-0.3rem",
+              //   "&:hover": {
+              //     color: palette.primary.main,
+              //     cursor: "pointer",
+              //   },
+              // }}
             >
-              <Typography
-                color={main}
-                variant="h5"
-                fontWeight="500"
-                sx={{
-                  marginLeft: "-0.3rem",
-                  "&:hover": {
-                    color: palette.primary.light,
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                {name}
-              </Typography>
-            </Box>
-            {time ? (
-              <>
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: "0.3rem",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    color: palette.neutral.mediumMain,
-                  }}
-                >
-                  <AccessTimeIcon fontSize="10px" sx={{ marginBottom: "2px" }} />
-                  <Typography variant="h6" fontWeight="300">
-                    {time}
-                  </Typography>
-                </Box>
-              </>
-            ) : null}
+              {`${author.first_name} ${author.last_name}`}
+            </Typography>
+            <Typography variant="h6" color={palette.neutral.medium}>
+              {` @${author.display_name} ∙`}
+            </Typography>
+            <Typography variant="h6" color={palette.neutral.medium}>
+              {time ?? ""}
+            </Typography>
           </Box>
-          <Typography color={medium} fontSize="0.75rem" sx={{ marginLeft: "-0.3rem" }}>
-            {subtitle}
-          </Typography>
         </Box>
-      </Box>
-    </FlexBetween>
+        <Typography color={palette.neutral.main} sx={{ mt: "1rem" }}>
+          {post.content}
+        </Typography>
+      </Link>
+    </Box>
   );
 };
 

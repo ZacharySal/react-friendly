@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+/* TODO: Create seperate model for comments, so we can have likes, replies */
+
 const postSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,

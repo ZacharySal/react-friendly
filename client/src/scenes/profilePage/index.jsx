@@ -1,5 +1,4 @@
 import { Box, useMediaQuery } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Navbar from "scenes/navbar";
@@ -7,36 +6,34 @@ import FriendListWidget from "scenes/widgets/FriendListWidget";
 import NewPostWidget from "scenes/widgets/NewPostWidget";
 import PostsWidget from "scenes/widgets/PostsWidget";
 import UserInfoWidget from "scenes/widgets/UserInfoWidget";
+import useSWR from "swr";
+
+const fetcher = async (params) => {
+  const [url, token] = params;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const data = await response.json();
+  return data;
+};
 
 const ProfilePage = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  const { userId } = useParams();
-  const loggedInUserId = useSelector((state) => state.user.user._id);
+  const { user_id } = useParams();
+  const loggedInUserId = useSelector((state) => state.user.user.id);
   const token = useSelector((state) => state.user.token);
   const isDesktopScreen = useMediaQuery("(min-width:1000px)");
+  const isSelf = loggedInUserId === user_id;
 
-  const isSelf = loggedInUserId === userId;
-  const getUser = async () => {
-    const response = await fetch(
-      `https://twitter-clone-node-server-production.up.railway.app/users/${userId}`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    setIsLoading(false);
-    setUser(data);
-  };
-
-  useEffect(() => {
-    getUser();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const { data: user, loading } = useSWR(
+    [user_id ? `http://localhost:6001/users/${user_id}` : null, token],
+    fetcher
+  );
 
   return (
-    <>
-      {!isLoading && (
+    <Box key={user_id}>
+      {!loading && user && (
         <Box>
           <Navbar />
           <Box
@@ -47,9 +44,9 @@ const ProfilePage = () => {
             justifyContent="center"
           >
             <Box flexBasis={isDesktopScreen ? "26%" : undefined}>
-              <UserInfoWidget userId={userId} pictureKey={user.pictureKey} />
+              <UserInfoWidget key={user_id} userId={user_id} picture_key={user.picture_key} />
               <Box m="2rem 0" />
-              <FriendListWidget userId={userId} />
+              {user.friends.length > 0 && <FriendListWidget key={user_id} userId={user_id} />}
             </Box>
             <Box
               flexBasis={isDesktopScreen ? "42%" : undefined}
@@ -57,16 +54,15 @@ const ProfilePage = () => {
             >
               {isSelf && (
                 <>
-                  <NewPostWidget pictureKey={user.pictureKey} />
-                  <Box m="2rem 0" />
+                  <NewPostWidget picture_key={user.picture_key} />
                 </>
               )}
-              <PostsWidget userId={userId} isProfile={"true"} />
+              <PostsWidget posts={user.posts} />
             </Box>
           </Box>
         </Box>
       )}
-    </>
+    </Box>
   );
 };
 

@@ -8,3 +8,48 @@ body,
   width: 100%;
   font-family: "Rubik", sans-serif;
 }
+
+input::placeholder {
+  font-size: 20px;
+}
+
+body:has(#modal) {
+  pointer-events: none;
+}
+
+#modal {
+  pointer-events: all !important;
+}
+
+.main-container {
+  width: 100%;
+  padding: 0rem clamp(0px, 1vw, 8px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+}
+
+@media screen and (min-width:1000px) {
+  .main-container {
+    width: 100%;
+    padding: 0rem 8%;
+    display: grid;
+    grid-template-columns: clamp(250px, 20vw, 270px) 650px;
+    gap: 1rem;
+  }
+}
+
+.MuiTooltip-arrow {
+  color: #f2f2f2;
+  font-weight: 800;
+}
+
+
+/* 
+#menu-option {
+  background-color: none !important;
+}
+
+#menu-option-container:hover #menu-option {
+  background-color: red;
+} */

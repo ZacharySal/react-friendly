@@ -1,153 +1,342 @@
-import Post from "../models/Post.js";
-import Comment from "../models/Comment.js";
-import User from "../models/User.js";
-
-import { uploadFile, getFileStream } from "../s3.js";
+import prisma from "../prisma/prisma.js";
+import { deleteFile, getFileStream, uploadFile } from "../s3.js";
 
 export const createPost = async (req, res) => {
-    try {
-        let result;
-        if (req.file) {
-            const file = req.file;
-            result = await uploadFile(file);
-        }
+  try {
+    let result;
 
-        const { userId, location, content } = req.body;
-        const user = await User.findById(userId);
-        const newPost = new Post({
-            userId,
-            location: location ? location : user.location,
-            content,
-            pictureKey: req.file ? result.Key : null,
-            likes: {},
-            comments: [],
-        });
-
-        await newPost.save();
-        const allPosts = await Post.find().sort('-createdAt').populate("comments").exec();
-        res.status(201).json(allPosts);
-    } catch (err) {
-        res.status(409).json({ msg: err.message });
+    if (req.file) {
+      const file = req.file;
+      result = await uploadFile(file);
     }
+
+    const { user_id, content, parent_id, isRepost } = req.body;
+
+    console.log(user_id, content, parent_id, isRepost);
+
+    console.log(Boolean(isRepost));
+
+    let options = {
+      author_id: user_id,
+      picture_key: req.file ? result.Key : null,
+      content,
+      isRepost: isRepost === "true" ? true : false,
+    };
+
+    options = parent_id ? { ...options, parent_id: parent_id } : options;
+
+    await prisma.post.create({
+      data: options,
+    });
+
+    const allPosts = await prisma.post.findMany({
+      include: postIncludeOptions,
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    res.status(201).json(allPosts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(409).json({ msg: err.message });
+  }
 };
 
 export const getImage = async (req, res) => {
-    try {
-        const key = req.params.key;
-        const readStream = getFileStream(key);
-        readStream.pipe(res);
-    } catch (err) {
-        res.status(404).json({ msg: err.message });
-    }
+  try {
+    const key = req.params.key;
+    const readStream = getFileStream(key);
+    readStream.pipe(res);
+  } catch (err) {
+    res.status(404).json({ msg: err.message });
+  }
 };
 
 export const getAllPosts = async (req, res) => {
-    try {
-        const allPosts = await Post.find().populate("comments").sort('-createdAt').exec();
-        res.status(200).json(allPosts);
-    } catch (err) {
-        res.status(404).json({ msg: err.message });
-    }
+  try {
+    const allPosts = await prisma.post.findMany({
+      include: postIncludeOptions,
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+    res.status(200).json(allPosts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json({ msg: err.message });
+  }
+};
+
+export const getPost = async (req, res) => {
+  try {
+    const { post_id } = req.params;
+
+    // TODO get parent posts with recursive cte
+    const parent_ids = await prisma.$queryRawUnsafe(
+      `WITH RECURSIVE parent_posts(id, parent_id, created_at) AS (
+        SELECT id, parent_id, created_at from "Post" c WHERE id = $1
+        UNION ALL
+          SELECT p.id, p.parent_id, p.created_at
+          from parent_posts po, "Post" p 
+          WHERE p.id = po.parent_id
+      )
+      select id, created_at from parent_posts p where p.id != $2
+      order by created_at`,
+      post_id,
+      post_id
+    );
+
+    const parent_posts = await Promise.all(
+      parent_ids.map((parent) =>
+        prisma.post.findUnique({
+          where: {
+            id: parent.id,
+          },
+          include: postIncludeOptions,
+        })
+      )
+    );
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: post_id,
+      },
+      include: postIncludeOptions,
+    });
+    res.status(200).json({ post, parent_posts });
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json({ msg: err.message });
+  }
 };
 
 export const getUserPosts = async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const userPosts = await Post.find({ userId }).populate("comments").sort('-createdAt').exec();;
-        res.status(200).json(userPosts);
-    } catch (err) {
-        res.status(404).json({ msg: err.message });
-    }
+  try {
+    const { user_id } = req.params;
+    //const userPosts = await Post.find({ user_id }).populate("comments").sort("-createdAt").exec();
+    const user = await prisma.user.findUnique({
+      where: {
+        id: user_id,
+      },
+      include: {
+        posts: {
+          include: postIncludeOptions,
+        },
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+    res.status(200).json(user.posts);
+  } catch (err) {
+    res.status(404).json({ msg: err.message });
+  }
 };
 
 export const likePost = async (req, res) => {
-    try {
-        const { postId } = req.params;
-        const { userId } = req.body;
-        const post = await Post.findById(postId);
-        const isLiked = post.likes.get(userId);
+  try {
+    const { post_id } = req.params;
+    const { user_id } = req.body;
 
-        if (isLiked) {
-            post.likes.delete(userId);
-        } else {
-            post.likes.set(userId, true);
-        }
+    // if record exists in post likes table, remove it, otherwise add it
 
-        const updatedPost = await Post.findByIdAndUpdate(postId, { likes: post.likes }, { new: true }).populate("comments").exec();
-        res.status(200).json(updatedPost);
-    } catch (err) {
-        console.log(err);
-        res.status(404).json({ msg: err.message });
+    const likedPost = await prisma.postLikes.findFirst({
+      where: {
+        user_id: user_id,
+        post_id: post_id,
+      },
+    });
+
+    if (likedPost) {
+      await prisma.postLikes.delete({
+        where: {
+          postLikes: {
+            user_id: user_id,
+            post_id: post_id,
+          },
+        },
+      });
+    } else {
+      await prisma.postLikes.create({
+        data: {
+          user_id: user_id,
+          post_id: post_id,
+        },
+      });
     }
+
+    const updatedPost = await prisma.post.findUnique({
+      where: {
+        id: post_id,
+      },
+      include: postIncludeOptions,
+    });
+
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    console.log(err);
+    res.status(404).json({ msg: err.message });
+  }
+};
+
+export const savePost = async (req, res) => {
+  try {
+    const { post_id } = req.params;
+    const { user_id } = req.body;
+
+    // if record exists in post saves table, remove it, otherwise add it
+
+    const savedPost = await prisma.postSaves.findFirst({
+      where: {
+        user_id: user_id,
+        post_id: post_id,
+      },
+    });
+
+    if (savedPost) {
+      await prisma.postSaves.delete({
+        where: {
+          postSaves: {
+            user_id: user_id,
+            post_id: post_id,
+          },
+        },
+      });
+    } else {
+      await prisma.postSaves.create({
+        data: {
+          user_id: user_id,
+          post_id: post_id,
+        },
+      });
+    }
+    const updatedPost = await prisma.post.findUnique({
+      where: {
+        id: post_id,
+      },
+      include: postIncludeOptions,
+    });
+
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    console.log(err);
+    res.status(404).json({ msg: err.message });
+  }
 };
 
 export const addComment = async (req, res) => {
-    try {
-        const { postId } = req.params;
-        const { userId, content } = req.body;
-        const newComment = new Comment({
-            userId,
-            postId,
-            content,
-            likes: {},
-        });
-        await newComment.save();
+  try {
+    const { post_id } = req.params;
+    const { user_id, parent_id, content } = req.body;
 
-        // we have to find the specified post, then push the comment, we can then populate the comments and send that back
-        const post = await Post.findById(postId);
-        post.comments.push(newComment._id);
-        await post.save();
-        const updatedPost = await Post.findById(postId).populate("comments");
-        res.status(201).json(updatedPost);
+    await prisma.comment.create({
+      data: {
+        post_id: post_id,
+        parent_id: parent_id,
+        author_id: user_id,
+        content: content,
+      },
+    });
 
-    } catch (err) {
-        res.status(404).json({ msg: err.message });
+    const updatedPost = await prisma.post.findUnique({
+      where: {
+        id: post_id,
+      },
+      include: postIncludeOptions,
+    });
+
+    res.status(201).json(updatedPost);
+  } catch (err) {
+    res.status(404).json({ msg: err.message });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  // we need to remove post from database and also remove the image from aws
+  const { post_id } = req.params;
+
+  try {
+    const delete_post = await prisma.post.delete({
+      where: {
+        id: post_id,
+      },
+    });
+    if (delete_post.picture_key) {
+      // remove image from s3 bucket
+      const response = await deleteFile(delete_post.picture_key);
+      console.log(response);
     }
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json({ msg: err.message });
+  }
 };
 
 export const likeComment = async (req, res) => {
-    try {
-        const { commentId } = req.params;
-        const { userId, postId } = req.body;
+  try {
+    const { comment_id } = req.params;
+    const { user_id, post_id } = req.body;
 
-        const comment = await Comment.findById(commentId);
-        const isLiked = comment.likes.get(userId);
+    const isLiked = await prisma.commentLikes.findUnique({
+      where: {
+        commentLike: {
+          user_id: user_id,
+          comment_id: comment_id,
+        },
+      },
+    });
 
-        if (isLiked) {
-            comment.likes.delete(userId);
-        } else {
-            comment.likes.set(userId, true);
-        }
-
-        await comment.save();
-        const post = await Post.findById(postId).populate("comments");
-        res.status(201).json(post);
-
-    } catch (err) {
-        res.status(404).json({ msg: err.message });
+    if (isLiked) {
+      await prisma.commentLikes.delete({
+        where: {
+          commentLike: {
+            user_id: user_id,
+            comment_id: comment_id,
+          },
+        },
+      });
+    } else {
+      await prisma.commentLikes.create({
+        data: {
+          user_id: user_id,
+          comment_id: comment_id,
+        },
+      });
     }
+
+    const updatedPost = await prisma.post.findUnique({
+      where: {
+        id: post_id,
+      },
+      include: postIncludeOptions,
+    });
+
+    res.status(201).json(updatedPost);
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json({ msg: err.message });
+  }
 };
 
-// export const addCommentReply = async (req, res) => {
-//     try {
-//         const { postId } = req.params;
-//         const { userId, content } = req.body;
-//         console.log(req.body);
-//         const newComment = new Comment({
-//             userId,
-//             postId,
-//             content,
-//             likes: {},
-//             replies: [],
-//         });
-//         await newComment.save();
-
-//         const post = await Post.findById(postId);
-//         post.comments.push(newComment._id);
-//         await post.save();
-//         res.status(201).json(post);
-
-//     } catch (err) {
-//         res.status(404).json({ msg: err.message });
-//     }
-// };
+export const postIncludeOptions = {
+  author: true,
+  parent: {
+    include: {
+      author: true,
+    },
+  },
+  likes: true,
+  saves: true,
+  children: {
+    include: {
+      author: true,
+      likes: true,
+      saves: true,
+    },
+    orderBy: {
+      created_at: "asc",
+    },
+  },
+};

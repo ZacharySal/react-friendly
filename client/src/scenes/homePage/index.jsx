@@ -1,48 +1,82 @@
-import Navbar from "scenes/navbar";
-import { Box, useMediaQuery } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import UserInfoWidget from "scenes/widgets/UserInfoWidget";
-import NewPostWidget from "scenes/widgets/NewPostWidget";
-import PostsWidget from "scenes/widgets/PostsWidget";
-import AdvertWidget from "scenes/widgets/AdvertWidget";
-import FriendListWidget from "scenes/widgets/FriendListWidget";
+import Layout from "../../components/Layout";
+import NewPostWidget from "../widgets/NewPostWidget";
+import PostsWidget from "../widgets/PostsWidget";
 
 const HomePage = () => {
-  const isDesktopScreen = useMediaQuery("(min-width:1000px)");
-  const { _id, pictureKey } = useSelector((state) => state.user.user);
+  const { picture_key } = useSelector((state) => state.user.user);
+  const posts = useSelector((state) => state.posts.posts);
+  const { palette } = useTheme();
+  const [postType, setPostType] = useState("feed");
+
+  console.log(posts);
 
   return (
-    <Box>
-      <Navbar />
-      <Box
-        width="100%"
-        padding="2rem 6%"
-        display={isDesktopScreen ? "flex" : "block"}
-        gap="0.5rem"
-        justifyContent="space-between"
-      >
-        {isDesktopScreen && (
-          <Box flexBasis={isDesktopScreen ? "26%" : undefined}>
-            <UserInfoWidget userId={_id} pictureKey={pictureKey} />
-          </Box>
-        )}
+    <Layout>
+      <Box width="100%" height="100vh" display="block" overflow="auto">
         <Box
-          flexBasis={isDesktopScreen ? "42%" : undefined}
-          mt={isDesktopScreen ? undefined : "0rem"}
+          position="sticky"
+          width="100%"
+          top="0"
+          display="block"
+          zIndex="20"
+          left="0"
+          borderBottom={`1px solid ${palette.neutral.light}`}
+          sx={{
+            backgroundColor: palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.4)",
+            backdropFilter: "blur(15px)",
+          }}
         >
-          <NewPostWidget pictureKey={pictureKey} />
-          <PostsWidget userId={_id} />
-        </Box>
-
-        {isDesktopScreen && (
-          <Box flexBasis="26%">
-            <AdvertWidget />
-            <Box m="2rem 0" />
-            <FriendListWidget userId={_id} />
+          <Box display="flex" justifyContent="space-evenly">
+            <Box
+              onClick={() => setPostType("feed")}
+              display="flex"
+              justifyContent="center"
+              sx={{
+                minWidth: "50%",
+                padding: "1rem",
+                letterSpacing: "-0.4px",
+                borderBottom: postType === "feed" ? `3px solid ${palette.primary.main}` : "",
+                borderWidth: "50%",
+                transition: "background-color 0.2s ease",
+                "&:hover": {
+                  backgroundColor: palette.neutral.light,
+                  cursor: "pointer",
+                },
+              }}
+            >
+              <Typography variant="h5" fontWeight="600">
+                For you
+              </Typography>
+            </Box>
+            <Box
+              onClick={() => setPostType("following")}
+              display="flex"
+              justifyContent="center"
+              sx={{
+                minWidth: "50%",
+                padding: "1rem",
+                letterSpacing: "-0.4px",
+                cursor: "pointer",
+                borderBottom: postType === "following" ? `3px solid ${palette.primary.main}` : "",
+                transition: "background-color 0.2s ease",
+                "&:hover": {
+                  backgroundColor: palette.neutral.light,
+                },
+              }}
+            >
+              <Typography variant="h5" fontWeight="600">
+                Following
+              </Typography>
+            </Box>
           </Box>
-        )}
+        </Box>
+        <NewPostWidget picture_key={picture_key} />
+        <PostsWidget posts={posts} />
       </Box>
-    </Box>
+    </Layout>
   );
 };
 

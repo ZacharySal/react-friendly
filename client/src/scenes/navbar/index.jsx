@@ -1,18 +1,18 @@
+import { DarkMode, LightMode, LogoutOutlined } from "@mui/icons-material";
 import {
+  FormControl,
   IconButton,
   InputBase,
-  Typography,
-  Select,
   MenuItem,
-  FormControl,
-  useTheme,
+  Select,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { DarkMode, LightMode, LogoutOutlined } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import { setMode, setLogout } from "app/userSlice";
 import FlexBetween from "components/FlexBetween";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setLogout, setMode } from "store/userSlice";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const Navbar = () => {
   const dark = theme.palette.neutral.dark;
   const alt = theme.palette.background.alt;
 
-  const fullName = `${user.firstName} ${user.lastName}`;
+  const fullName = `${user.first_name} ${user.last_name}`;
 
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
@@ -41,7 +41,7 @@ const Navbar = () => {
             },
           }}
         >
-          Friendly
+          Friendly {process.env.test}
         </Typography>
         {/* {isDesktopScreen && (
           <FlexBetween

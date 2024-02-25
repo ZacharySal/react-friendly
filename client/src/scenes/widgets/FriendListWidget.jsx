@@ -10,7 +10,7 @@ const FriendListWidget = ({ userId }) => {
 
   const { palette } = useTheme();
 
-  const loggedInUserId = useSelector((state) => state.user.user._id);
+  const loggedInUserId = useSelector((state) => state.user.user.id);
   const loggedInUserFriends = useSelector((state) => state.user.user.friends);
   const token = useSelector((state) => state.user.token);
 
@@ -18,13 +18,10 @@ const FriendListWidget = ({ userId }) => {
 
   // we only need to get friends if the friend list widget is not for the logged in user, do not dispatch to store
   const getFriends = async () => {
-    const response = await fetch(
-      `https://twitter-clone-node-server-production.up.railway.app/users/${userId}/friends`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`http://localhost:6001/users/${userId}/friends`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await response.json();
     setFriends(data);
     setIsLoading(false);
@@ -41,27 +38,28 @@ const FriendListWidget = ({ userId }) => {
 
   return (
     <>
-      {!isLoading && (
+      {!isLoading && friends.length > 0 && (
         <WidgetWrapper>
           <Typography
             color={palette.neutral.dark}
             variant="h5"
             fontWeight="500"
-            sx={{ mb: "1.5rem" }}
+            sx={{ mb: "1rem" }}
           >
             Friend List
           </Typography>
           <Box display="flex" flexDirection="column" gap="1.5rem">
-            {friends.map((friend) => (
-              <FriendInfo
-                key={friend._id}
-                authorId={friend._id}
-                name={`${friend.firstName} ${friend.lastName}`}
-                subtitle={friend.occupation}
-                pictureKey={friend.pictureKey}
-                isPost={false}
-              />
-            ))}
+            {friends &&
+              friends.map((friendInfo) => (
+                <FriendInfo
+                  key={friendInfo.friend.id}
+                  authorId={friendInfo.friend.id}
+                  name={`${friendInfo.friend.first_name} ${friendInfo.friend.last_name}`}
+                  subtitle={friendInfo.friend.occupation}
+                  picture_key={friendInfo.friend.picture_key}
+                  isPost={false}
+                />
+              ))}
           </Box>
         </WidgetWrapper>
       )}

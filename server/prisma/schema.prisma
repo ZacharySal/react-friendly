@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id          String      @id @default(uuid())
+  isRepost    Boolean
+  author_id   String
+  parent_id   String?
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  content     String?
+  picture_key String?
+  likes       PostLikes[]
+  author      User        @relation("author", fields: [author_id], references: [id], onDelete: Cascade)
+  parent      Post?       @relation("parent", fields: [parent_id], references: [id])
+  children    Post[]      @relation("parent")
+  saves       PostSaves[]
+}
+
+model User {
+  id           String      @id @default(uuid())
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+  first_name   String
+  last_name    String
+  display_name String      @unique
+  email        String      @unique
+  password     String
+  picture_key  String?
+  posts        Post[]      @relation("author")
+  savedPosts   PostSaves[]
+  friends_of   Friends[]   @relation("friend")
+  friends      Friends[]   @relation("user")
+  liked_posts  PostLikes[]
+}
+
+model PostLikes {
+  post    Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+
+  @@id(name: "postLikes", [user_id, post_id])
+}
+
+model PostSaves {
+  post    Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+
+  @@id(name: "postSaves", [user_id, post_id])
+}
+
+model Friends {
+  user      User   @relation("user", fields: [user_id], references: [id], onDelete: Cascade)
+  user_id   String
+  friend    User   @relation("friend", fields: [friend_id], references: [id], onDelete: Cascade)
+  friend_id String
+
+  @@id(name: "friends", [user_id, friend_id])
+}
+
+// model Comment {
+//   id         String         @id @default(uuid())
+//   created_at DateTime       @default(now())
+//   updated_at DateTime       @updatedAt
+//   author_id  String
+//   post_id    String
+//   content    String
+//   parent_id  String?
+//   post       Post           @relation(fields: [post_id], references: [id], onDelete: Cascade)
+//   author     User           @relation(fields: [author_id], references: [id], onDelete: Cascade)
+//   likes      CommentLikes[]
+//   parent     Comment?       @relation("parent", fields: [parent_id], references: [id])
+//   replies    Comment[]      @relation("parent")
+// }
+
+// model CommentLikes {
+//   comment    Comment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+//   comment_id String
+//   user       User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+//   user_id    String
+
+//   @@id(name: "commentLike", [user_id, comment_id])
+// }

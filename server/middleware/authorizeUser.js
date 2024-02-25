@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 
+// TODO: uncomment verifyToken
+
 export const verifyToken = async (req, res, next) => {
 
     next();

@@ -1,91 +1,38 @@
-import { Box, Divider, Typography, useTheme, IconButton } from "@mui/material";
-import FlexBetween from "components/FlexBetween";
-import { FavoriteBorderOutlined, FavoriteOutlined } from "@mui/icons-material";
-import { useState, useEffect } from "react";
-import UserImage from "components/UserImage";
-import { useDispatch } from "react-redux";
-import { patchCommentLike } from "app/postsSlice";
+import { Box, Divider } from "@mui/material";
+import CommentList from "components/CommentList";
+import NewComment from "components/NewComment";
+import { useMemo, useState } from "react";
 
-const Comment = ({ comment, token, loggedInUserId, postId }) => {
-  const [userInfo, setUserInfo] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+const CommentWidget = ({ comments, post_id }) => {
+  const [replyingTo, setReplyingTo] = useState(null);
 
-  const { palette } = useTheme();
-  const main = palette.neutral.main;
+  const commentsByParentId = useMemo(() => {
+    const group = {};
+    comments.forEach((comment) => {
+      group[comment?.parent?.id] ||= [];
+      group[comment?.parent?.id].push(comment);
+    });
+    return group;
+  }, [comments]);
 
-  const dispatch = useDispatch();
-  const isLiked = Boolean(comment.likes[loggedInUserId]);
-  const likeCount = Object.keys(comment.likes).length;
-  const commentId = comment._id;
+  const rootComments = commentsByParentId[undefined];
 
-  const getCommentAuthorInfo = async () => {
-    const response = await fetch(
-      `https://twitter-clone-node-server-production.up.railway.app/users/${comment.userId}`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    setUserInfo(data);
-    setIsLoading(false);
+  const getReplies = (parentId) => {
+    return commentsByParentId[parentId];
   };
 
-  useEffect(() => {
-    getCommentAuthorInfo();
-  }, []); //eslint-disable-line react-hooks/exhaustive-deps
-
   return (
-    <>
-      {!isLoading && (
-        <Box>
-          <Divider />
-
-          {/* USER INFO */}
-          <Box
-            sx={{
-              marginTop: "0.5rem",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              color: main,
-              gap: "0.5rem",
-            }}
-          >
-            <UserImage pictureKey={userInfo.pictureKey} size="30px" />
-            <Typography>{`${userInfo.firstName} ${userInfo.lastName}`}</Typography>
-          </Box>
-
-          {/* COMMENT CONTENT*/}
-          <FlexBetween>
-            <Typography
-              sx={{
-                color: palette.neutral.mediumMain,
-                m: "0.75rem 1rem 0.75rem 0rem",
-              }}
-            >
-              {comment.content}
-            </Typography>
-            <FlexBetween>
-              <IconButton
-                onClick={() =>
-                  dispatch(patchCommentLike({ commentId, postId }))
-                }
-              >
-                {isLiked ? (
-                  <FavoriteOutlined sx={{ color: "red" }} />
-                ) : (
-                  <FavoriteBorderOutlined />
-                )}
-              </IconButton>
-              <Typography>{likeCount}</Typography>
-            </FlexBetween>
-          </FlexBetween>
-        </Box>
-      )}
-    </>
+    <Box>
+      <CommentList
+        rootComments={rootComments}
+        post_id={post_id}
+        setReplyingTo={setReplyingTo}
+        getReplies={(id) => getReplies(id)}
+      />
+      <Divider />
+      <NewComment post_id={post_id} replyingTo={replyingTo} setReplyingTo={setReplyingTo} />
+    </Box>
   );
 };
 
-export default Comment;
+export default CommentWidget;

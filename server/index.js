@@ -14,6 +14,7 @@ import { createPost } from "./controllers/postController.js";
 import authRouter from "./routes/authRouter.js";
 import userRouter from "./routes/userRouter.js";
 import postRouter from "./routes/postRouter.js";
+import prisma from "./prisma/prisma.js";
 
 /* CONFIG */
 const __filename = fileURLToPath(import.meta.url);
@@ -24,12 +25,12 @@ app.use(express.json());
 app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors({ origin: "*", }));
+app.use(cors({ origin: "*" }));
 
-app.use("/assets", express.static(path.join(__dirname, 'public/assets')));
+app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 /* FILE STORAGE*/
-const upload = multer({ dest: 'image_uploads/' });
+const upload = multer({ dest: "image_uploads/" });
 
 /* ROUTES WITH FILES */
 app.post("/auth/register", upload.single("picture"), register);
@@ -40,22 +41,33 @@ app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 
+const PORT = process.env.PORT || 6001;
+
 /* MONGOOSE SETUP */
-const PORT = process.env.port || 6001;
-const connect_database = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
-    }
-    catch (error) {
-        console.log(`${error} did not connect`);
-    }
-};
+// const connect_database = async () => {
+//   try {
+//     await mongoose.connect(process.env.MONGO_URL, {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true,
+//     });
+//     app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
+//   } catch (error) {
+//     console.log(`${error} did not connect`);
+//   }
+// };
+//connect_database();
 
-connect_database();
+async function main() {
+  await prisma.$connect();
+  app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
+}
 
-
-
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

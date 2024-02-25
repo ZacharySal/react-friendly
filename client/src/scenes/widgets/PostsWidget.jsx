@@ -1,64 +1,29 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useTheme } from "@emotion/react";
+import { Box, Typography } from "@mui/material";
 import PostWidget from "./PostWidget";
 
-const PostsWidget = ({ userId, isProfile = false }) => {
-  const [posts, setPosts] = useState({});
-  const allPosts = useSelector((state) => state.posts.posts);
-  const token = useSelector((state) => state.user.token);
-  const [isLoading, setIsLoading] = useState(true);
-
-  /* Do not dispatch get user posts to store */
-  const getUserPosts = async () => {
-    const response = await fetch(
-      `https://twitter-clone-node-server-production.up.railway.app/posts/${userId}`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    setPosts(data);
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    if (isProfile) {
-      getUserPosts();
-    } else {
-      setPosts(allPosts);
-      setIsLoading(false);
-    }
-  }, [allPosts]); // eslint-disable-line react-hooks/exhaustive-deps
+const PostsWidget = ({ posts, isPostPage = false }) => {
+  const { palette } = useTheme();
 
   return (
-    <>
-      {!isLoading &&
-        posts.map(
-          ({
-            _id,
-            userId,
-            content,
-            location,
-            pictureKey,
-            likes,
-            comments,
-            createdAt,
-          }) => (
-            <PostWidget
-              key={_id}
-              postId={_id}
-              postUserId={userId}
-              content={content}
-              location={location}
-              postPictureKey={pictureKey}
-              likes={likes}
-              comments={comments}
-              createdAt={createdAt}
-            />
-          )
-        )}
-    </>
+    <Box width="100%">
+      {posts?.map((post) => (
+        <PostWidget key={post.id} post={post} isPostPage={isPostPage} />
+      ))}
+      {posts.length === 0 && (
+        <Box
+          minWidth="100%"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          marginTop="5rem"
+        >
+          <Typography variant="h5" color={palette.neutral.medium}>
+            {true ? "Create posts to view them here" : "This user has not created any posts"}
+          </Typography>
+        </Box>
+      )}
+    </Box>
   );
 };
 
