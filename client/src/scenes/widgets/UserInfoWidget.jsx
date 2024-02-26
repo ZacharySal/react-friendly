@@ -34,7 +34,7 @@ const UserInfoWidget = ({ userId, picture_key }) => {
     return null;
   }
 
-  const { first_name, last_name, display_name, location, occupation } = user;
+  const { first_name, last_name, display_name, location, occupation, id } = user;
 
   return (
     <>
@@ -44,7 +44,7 @@ const UserInfoWidget = ({ userId, picture_key }) => {
           <Link to={`/profile/${userId}`}>
             <FlexBetween gap="0.25rem" pb="1rem">
               <FlexBetween gap="1rem">
-                <UserImage picture_key={picture_key} />
+                <UserImage picture_key={picture_key} user_id={id} />
                 <Box>
                   <Typography
                     variant="h4"

@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { mutate } from "swr";
 
 const initialState = {
   posts: [],
@@ -21,7 +22,7 @@ export const fetchPosts = createAsyncThunk(
 
 export const addPost = createAsyncThunk(
   "posts/addPost",
-  async ({ formData, mutate }, { getState }) => {
+  async ({ formData, mutateKey }, { getState }) => {
     const state = getState();
     const parent_id = formData.get("parent_id");
     const response = await fetch(`http://localhost:6001/posts`, {
@@ -30,9 +31,7 @@ export const addPost = createAsyncThunk(
       body: formData,
     });
     const data = await response.json();
-    if (mutate) {
-      mutate(`http://localhost:6001/posts/post/${parent_id}`);
-    }
+    mutate(mutateKey);
     return data;
   }
 );
@@ -55,7 +54,7 @@ export const deletePost = createAsyncThunk(
 
 export const patchLike = createAsyncThunk(
   "posts/patchLike",
-  async ({ post_id, parent_id, mutate }, { getState }) => {
+  async ({ post_id, mutateKey }, { getState }) => {
     const state = getState();
     const response = await fetch(`http://localhost:6001/posts/${post_id}/like`, {
       method: "PATCH",
@@ -66,15 +65,14 @@ export const patchLike = createAsyncThunk(
       body: JSON.stringify({ user_id: state.user.user.id }),
     });
     const data = await response.json();
-    mutate(`http://localhost:6001/posts/post/${parent_id}`);
+    mutate(mutateKey);
     return data;
   }
 );
 
 export const patchSave = createAsyncThunk(
   "posts/patchSave",
-  async ({ post_id, parent_id, mutate }, { getState }) => {
-    console.log(post_id, parent_id, mutate);
+  async ({ post_id, mutateKey }, { getState }) => {
     const state = getState();
     const response = await fetch(`http://localhost:6001/posts/${post_id}/save`, {
       method: "PATCH",
@@ -85,46 +83,7 @@ export const patchSave = createAsyncThunk(
       body: JSON.stringify({ user_id: state.user.user.id }),
     });
     const data = await response.json();
-    console.log("Mutating URL -> ", `http://localhost:6001/posts/post/${parent_id}`);
-    mutate(`http://localhost:6001/posts/post/${parent_id}`);
-    return data;
-  }
-);
-
-export const patchComment = createAsyncThunk(
-  "posts/patchComment",
-  async (postInfo, { getState }) => {
-    const state = getState();
-    const response = await fetch(`http://localhost:6001/posts/${postInfo.post_id}/comment`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${state.user.token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: state.user.user.id,
-        parent_id: postInfo.parent_id,
-        content: postInfo.commentValue,
-      }),
-    });
-    const data = await response.json();
-    return data;
-  }
-);
-
-export const patchCommentLike = createAsyncThunk(
-  "posts/patchCommentLike",
-  async (postInfo, { getState }) => {
-    const state = getState();
-    const response = await fetch(`http://localhost:6001/posts/comment/${postInfo.commentId}/like`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${state.user.token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user_id: state.user.user.id, post_id: postInfo.post_id }),
-    });
-    const data = await response.json();
+    mutate(mutateKey);
     return data;
   }
 );
@@ -199,28 +158,6 @@ export const postsSlice = createSlice({
         postsSlice.caseReducers.setPost(state, action);
       })
       .addCase(patchSave.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      })
-      .addCase(patchComment.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(patchComment.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        postsSlice.caseReducers.setPost(state, action);
-      })
-      .addCase(patchComment.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      })
-      .addCase(patchCommentLike.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(patchCommentLike.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        postsSlice.caseReducers.setPost(state, action);
-      })
-      .addCase(patchCommentLike.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

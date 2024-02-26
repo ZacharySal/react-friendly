@@ -1,11 +1,11 @@
-import { Box, useMediaQuery } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
+import { Box, IconButton, Typography } from "@mui/material";
+import Layout from "components/Layout";
+import ProfileInfo from "components/ProfileInfo";
+import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import Navbar from "scenes/navbar";
-import FriendListWidget from "scenes/widgets/FriendListWidget";
-import NewPostWidget from "scenes/widgets/NewPostWidget";
+import { useNavigate, useParams } from "react-router-dom";
 import PostsWidget from "scenes/widgets/PostsWidget";
-import UserInfoWidget from "scenes/widgets/UserInfoWidget";
 import useSWR from "swr";
 
 const fetcher = async (params) => {
@@ -21,48 +21,53 @@ const fetcher = async (params) => {
 
 const ProfilePage = () => {
   const { user_id } = useParams();
+
   const loggedInUserId = useSelector((state) => state.user.user.id);
   const token = useSelector((state) => state.user.token);
-  const isDesktopScreen = useMediaQuery("(min-width:1000px)");
-  const isSelf = loggedInUserId === user_id;
+  const navigate = useNavigate();
+  const [contentCategory, setContentCategory] = useState("posts");
 
-  const { data: user, loading } = useSWR(
-    [user_id ? `http://localhost:6001/users/${user_id}` : null, token],
-    fetcher
-  );
+  const key = `http://localhost:6001/users/${user_id}`;
+
+  const { data: user, isLoading } = useSWR([key, token], fetcher);
+
+  let posts;
+
+  if (!isLoading) {
+    console.log(user);
+    posts =
+      contentCategory === "posts"
+        ? user.posts
+        : contentCategory === "replies"
+        ? user.posts.filter((post) => post.parent_id !== null && !post.isRepost)
+        : user.posts.filter((post) => post.isRepost);
+  }
 
   return (
-    <Box key={user_id}>
-      {!loading && user && (
-        <Box>
-          <Navbar />
-          <Box
-            width="100%"
-            padding="2rem 6%"
-            display={isDesktopScreen ? "flex" : "block"}
-            gap="2rem"
-            justifyContent="center"
-          >
-            <Box flexBasis={isDesktopScreen ? "26%" : undefined}>
-              <UserInfoWidget key={user_id} userId={user_id} picture_key={user.picture_key} />
-              <Box m="2rem 0" />
-              {user.friends.length > 0 && <FriendListWidget key={user_id} userId={user_id} />}
-            </Box>
-            <Box
-              flexBasis={isDesktopScreen ? "42%" : undefined}
-              mt={isDesktopScreen ? undefined : "2rem"}
-            >
-              {isSelf && (
-                <>
-                  <NewPostWidget picture_key={user.picture_key} />
-                </>
-              )}
-              <PostsWidget posts={user.posts} />
-            </Box>
+    <Layout key={user_id}>
+      {!isLoading && user && (
+        <Box mt="1rem">
+          {/* TOP NAV */}
+          <Box padding="0rem 1rem" display="flex" alignItems="center" gap="1rem" mb="1rem">
+            <IconButton onClick={() => navigate(-1)}>
+              <ArrowBack />
+            </IconButton>
+            <Typography variant="h4" fontWeight="500">
+              {`${user.first_name} ${user.last_name}`}{" "}
+              {/* <span style={{ color: palette.neutral.medium, fontSize: "16px" }}>
+                {user.posts?.length || "0"} posts
+              </span> */}
+            </Typography>
           </Box>
+          <ProfileInfo
+            user={user}
+            contentCategory={contentCategory}
+            setContentCategory={setContentCategory}
+          />
+          <PostsWidget posts={posts} mutateURL={[key, token]} />
         </Box>
       )}
-    </Box>
+    </Layout>
   );
 };
 

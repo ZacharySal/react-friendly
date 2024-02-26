@@ -2,13 +2,13 @@ import { useTheme } from "@emotion/react";
 import { Box, Typography } from "@mui/material";
 import PostWidget from "./PostWidget";
 
-const PostsWidget = ({ posts, isPostPage = false }) => {
+const PostsWidget = ({ posts, mutateURL, isPostPage = false }) => {
   const { palette } = useTheme();
 
   return (
     <Box width="100%">
       {posts?.map((post) => (
-        <PostWidget key={post.id} post={post} isPostPage={isPostPage} />
+        <PostWidget key={post.id} post={post} mutateURL={mutateURL} isPostPage={isPostPage} />
       ))}
       {posts.length === 0 && (
         <Box

@@ -41,8 +41,6 @@ const PostPage = () => {
     error,
   } = useSWR(`http://localhost:6001/posts/post/${post_id}`, fetcher);
 
-  console.log("URL to mutate -> ", `http://localhost:6001/posts/post/${post_id}`);
-
   if (error) console.log(error);
 
   return <Layout>{!loading && postInfo?.post?.author && <FullPost postInfo={postInfo} />}</Layout>;
@@ -76,7 +74,7 @@ const FullPost = ({ postInfo }) => {
     formData.append("parent_id", post.id);
     formData.append("isRepost", false);
 
-    dispatch(addPost({ formData, mutate }));
+    dispatch(addPost({ formData, mutateKey: `http://localhost:6001/posts/post/${post_id}` }));
     setReply("");
     setFocusReply(false);
   };
@@ -125,7 +123,11 @@ const FullPost = ({ postInfo }) => {
         <Box ref={mainPostRef} padding="0rem 1rem">
           <FlexBetween mb="1rem">
             <FlexBetween pl="-8px" gap="0.75rem">
-              <UserImage picture_key={post.author.picture_key} size="40px" />
+              <UserImage
+                picture_key={post.author.picture_key}
+                user_id={post.author.id}
+                size="40px"
+              />
               <Box display="flex" flexDirection="column">
                 <Typography
                   variant="h5"
@@ -198,7 +200,11 @@ const FullPost = ({ postInfo }) => {
             <PostStatistic
               hoverColor="rgb(229,24,128)"
               name="Likes"
-              onClick={() => dispatch(patchLike({ post_id, parent_id: post_id, mutate }))}
+              onClick={() =>
+                dispatch(
+                  patchLike({ post_id, mutateKey: `http://localhost:6001/posts/post/${post_id}` })
+                )
+              }
             >
               {isLiked ? (
                 <FavoriteOutlined sx={{ color: "rgb(229, 24, 128)", fontSize: "23px" }} />
@@ -216,7 +222,11 @@ const FullPost = ({ postInfo }) => {
             <PostStatistic
               hoverColor={palette.primary.main}
               name="Saved"
-              onClick={() => dispatch(patchSave({ post_id, parent_id: post_id, mutate }))}
+              onClick={() =>
+                dispatch(
+                  patchSave({ post_id, mutateKey: `http://localhost:6001/posts/post/${post_id}` })
+                )
+              }
             >
               {isSaved ? (
                 <BookmarkIcon sx={{ color: palette.primary.main, fontSize: "23px" }} />
@@ -251,7 +261,7 @@ const FullPost = ({ postInfo }) => {
               marginBottom={focusReply ? "0rem" : "1.5rem"}
             >
               <Box width="100%" display="flex" gap="1rem">
-                <UserImage picture_key={picture_key} size="40px" />
+                <UserImage picture_key={picture_key} user_id={id} size="40px" />
                 <InputBase
                   sx={{ fontSize: "20px" }}
                   multiline
@@ -329,7 +339,12 @@ const FullPost = ({ postInfo }) => {
         </Box>
       </Box>
       {post?.children?.map((childPost) => (
-        <PostWidget key={childPost.id} post={childPost} postPageId={post.id} isPostPage={true} />
+        <PostWidget
+          key={childPost.id}
+          post={childPost}
+          mutateURL={`http://localhost:6001/posts/post/${post_id}`}
+          isPostPage={true}
+        />
       ))}
     </Box>
   );

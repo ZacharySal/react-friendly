@@ -26,6 +26,7 @@ body:has(#modal) {
   padding: 0rem clamp(0px, 1vw, 8px);
   display: grid;
   grid-template-columns: auto 1fr;
+  justify-content: center;
   gap: 0.5rem;
 }
 
@@ -44,6 +45,9 @@ body:has(#modal) {
   font-weight: 800;
 }
 
+a {
+  all: unset;
+}
 
 /* 
 #menu-option {

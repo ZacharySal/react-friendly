@@ -52,7 +52,7 @@ const NewPostWidget = ({ picture_key }) => {
       padding="1rem 1.5rem 0.75rem 1rem"
       borderBottom={`1px solid ${palette.neutral.light}`}
     >
-      <UserImage picture_key={picture_key} size="40px" />
+      <UserImage picture_key={picture_key} user_id={id} size="40px" />
       <Box marginTop="3px">
         <InputBase
           multiline

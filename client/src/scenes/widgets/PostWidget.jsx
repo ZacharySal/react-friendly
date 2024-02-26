@@ -21,7 +21,7 @@ import { useSWRConfig } from "swr";
 
 const PostWidget = ({
   post,
-  postPageId = null,
+  mutateURL,
   isPostPage = false,
   isChain = false,
   modalView = false,
@@ -69,7 +69,7 @@ const PostWidget = ({
           display: "grid",
           gridTemplateColumns: modalView ? null : "auto 1fr",
           gridTemplateRows: modalView ? "auto auto" : null,
-          gap: modalView ? "0.35rem" : "1rem",
+          gap: modalView ? "0rem" : "1rem",
         }}
       >
         <Box
@@ -77,7 +77,11 @@ const PostWidget = ({
           gap={modalView ? "0.5rem" : null}
           gridTemplateRows={modalView ? null : "auto 1fr"}
         >
-          <UserImage picture_key={post.author.picture_key} size={modalView ? "25px" : "40px"} />
+          <UserImage
+            picture_key={post.author.picture_key}
+            user_id={post.author.id}
+            size={modalView ? "25px" : "40px"}
+          />
           {isChain && (
             <Box
               sx={{
@@ -165,8 +169,7 @@ const PostWidget = ({
                   dispatch(
                     patchLike({
                       post_id: post.id,
-                      parent_id: isPostPage ? postPageId : post.parent_id,
-                      mutate,
+                      mutateKey: mutateURL,
                     })
                   );
                 }}
@@ -193,8 +196,7 @@ const PostWidget = ({
                   dispatch(
                     patchSave({
                       post_id: post.id,
-                      parent_id: isPostPage ? postPageId : post.parent_id,
-                      mutate,
+                      mutateKey: mutateURL,
                     })
                   );
                 }}
@@ -245,7 +247,10 @@ const AuthorInfo = ({ author, time }) => {
         {`${author.first_name} ${author.last_name}`}
       </Typography>
       <Typography variant="h6" color={palette.neutral.medium}>
-        {` @${author.display_name} ∙`}
+        {` @${author.display_name}`}
+      </Typography>
+      <Typography variant="h6" color={palette.neutral.medium}>
+        ∙
       </Typography>
       <Typography variant="h6" color={palette.neutral.medium}>
         {time ?? ""}

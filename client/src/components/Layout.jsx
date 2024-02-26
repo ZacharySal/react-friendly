@@ -12,7 +12,7 @@ import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { ModalContext } from "contexts/ModalContext";
 import NewPostModal from "modals/NewPostModal";
 import { useContext } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { setMode } from "store/userSlice";
 import MenuOption from "./MenuOption";
@@ -22,6 +22,7 @@ const Layout = ({ children }) => {
   const { palette } = useTheme();
 
   const dispatch = useDispatch();
+  const { id: loggedInUserId } = useSelector((state) => state.user.user);
 
   const { modalContext } = useContext(ModalContext);
 
@@ -52,12 +53,16 @@ const Layout = ({ children }) => {
               <img style={{ maxWidth: "100%" }} alt="" src="../assets/logo.svg"></img>
             </Box>
           )}
-          <MenuOption icon={<HomeOutlined fontSize="large" />} text={"Home"} />
+          <MenuOption icon={<HomeOutlined fontSize="large" />} link="/home" text={"Home"} />
           <MenuOption icon={<SearchOutlined fontSize="large" />} text={"Search"} />
           <MenuOption icon={<MessageOutlined fontSize="large" />} text={"Messages"} />
           <MenuOption icon={<NotificationsOutlined fontSize="large" />} text={"Notifications"} />
           <MenuOption icon={<BookmarkBorderOutlined fontSize="large" />} text={"Bookmarks"} />
-          <MenuOption icon={<PersonOutlineOutlined fontSize="large" />} text={"Profile"} />
+          <MenuOption
+            icon={<PersonOutlineOutlined fontSize="large" />}
+            link={`/profile/${loggedInUserId}`}
+            text={"Profile"}
+          />
           <MenuOption
             icon={
               palette.mode === "dark" ? (

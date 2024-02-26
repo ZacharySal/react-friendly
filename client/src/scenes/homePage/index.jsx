@@ -11,8 +11,6 @@ const HomePage = () => {
   const { palette } = useTheme();
   const [postType, setPostType] = useState("feed");
 
-  console.log(posts);
-
   return (
     <Layout>
       <Box width="100%" height="100vh" display="block" overflow="auto">

@@ -105,7 +105,7 @@ const NewPostModal = () => {
           }}
         >
           <Box>
-            <UserImage picture_key={post.author.picture_key} size="40px" />
+            <UserImage picture_key={post.author.picture_key} user_id={post.author.id} size="40px" />
             <Box
               sx={{
                 position: "relative",
@@ -157,7 +157,7 @@ const NewPostModal = () => {
       )}
 
       <Box width="100%" mb="1rem" display="grid" gridTemplateColumns="auto 1fr" columnGap="1rem">
-        <UserImage picture_key={user_picture_key} size="40px" />
+        <UserImage picture_key={user_picture_key} user_id={logged_in_user_id} size="40px" />
         <Box width="100%" display="flex" flexDirection="column" gap="1rem">
           <InputBase
             sx={{ fontSize: "20px" }}

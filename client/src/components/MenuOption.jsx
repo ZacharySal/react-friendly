@@ -1,6 +1,7 @@
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Link } from "react-router-dom";
 
-const MenuOption = ({ icon, text, onClick = null }) => {
+const MenuOption = ({ icon, text, link = "/home", onClick = null }) => {
   const { palette } = useTheme();
   const isDesktopScreen = useMediaQuery("(min-width:700px)");
 
@@ -18,21 +19,20 @@ const MenuOption = ({ icon, text, onClick = null }) => {
     >
       <Box
         id="menu-option"
-        display="flex"
-        gap="1rem"
-        alignItems="center"
         borderRadius="10px"
         padding="10px"
         paddingRight={isDesktopScreen ? "20px" : "10px"}
         width={isDesktopScreen ? "min-content" : "100%"}
         justifyContent={isDesktopScreen ? "center" : "flex-start"}
       >
-        {icon}
-        {isDesktopScreen && (
-          <Typography variant="h4" whiteSpace="nowrap">
-            {text}
-          </Typography>
-        )}
+        <Link to={link} style={{ display: "flex", gap: "1rem" }}>
+          {icon}
+          {isDesktopScreen && (
+            <Typography variant="h4" whiteSpace="nowrap">
+              {text}
+            </Typography>
+          )}
+        </Link>
       </Box>
     </Box>
   );
