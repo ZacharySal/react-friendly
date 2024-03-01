@@ -13,13 +13,14 @@ const PostsWidget = ({ posts, mutateURL, isPostPage = false }) => {
       {posts.length === 0 && (
         <Box
           minWidth="100%"
+          height="150px"
           display="flex"
           justifyContent="center"
           alignItems="center"
-          marginTop="5rem"
+          borderBottom={`1px solid ${palette.neutral.light}`}
         >
           <Typography variant="h5" color={palette.neutral.medium}>
-            {true ? "Create posts to view them here" : "This user has not created any posts"}
+            No posts available
           </Typography>
         </Box>
       )}

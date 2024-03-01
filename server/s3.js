@@ -1,6 +1,7 @@
-import dotenv from "dotenv";
 import S3 from "aws-sdk/clients/s3.js";
+import dotenv from "dotenv";
 import fs from "fs";
+import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 
@@ -16,13 +17,13 @@ const s3 = new S3({
 });
 
 // upload file to s3
-export const uploadFile = (file) => {
-  const fileStream = fs.createReadStream(file.path);
+export const uploadFile = (file, isBlob) => {
+  const fileStream = isBlob ? file : fs.createReadStream(file.path);
 
   const uploadParams = {
     Bucket: bucketName,
     Body: fileStream,
-    Key: file.filename,
+    Key: isBlob ? uuidv4() : file.filename,
   };
 
   return s3.upload(uploadParams).promise();

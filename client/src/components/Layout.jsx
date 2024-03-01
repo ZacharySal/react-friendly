@@ -10,7 +10,7 @@ import {
 } from "@mui/icons-material";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { ModalContext } from "contexts/ModalContext";
-import NewPostModal from "modals/NewPostModal";
+import ModalProvider from "modals/ModalProvider";
 import { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -28,7 +28,7 @@ const Layout = ({ children }) => {
 
   return (
     <Box>
-      {modalContext.show && <NewPostModal />}
+      {modalContext.show && <ModalProvider />}
       <div className="main-container">
         <Box display="flex" flexDirection="column" alignItems="start" gap="0.5rem" mt="1rem">
           {isDesktopScreen ? (

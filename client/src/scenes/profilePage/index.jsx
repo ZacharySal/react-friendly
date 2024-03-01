@@ -34,7 +34,6 @@ const ProfilePage = () => {
   let posts;
 
   if (!isLoading) {
-    console.log(user);
     posts =
       contentCategory === "posts"
         ? user.posts
@@ -54,9 +53,6 @@ const ProfilePage = () => {
             </IconButton>
             <Typography variant="h4" fontWeight="500">
               {`${user.first_name} ${user.last_name}`}{" "}
-              {/* <span style={{ color: palette.neutral.medium, fontSize: "16px" }}>
-                {user.posts?.length || "0"} posts
-              </span> */}
             </Typography>
           </Box>
           <ProfileInfo

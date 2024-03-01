@@ -24,22 +24,24 @@ model Post {
 }
 
 model User {
-  id                 String      @id @default(uuid())
-  created_at         DateTime    @default(now())
-  updated_at         DateTime    @updatedAt
-  first_name         String
-  last_name          String
-  display_name       String      @unique
-  email              String      @unique
-  password           String
-  picture_key        String?
-  biography          String?
-  banner_picture_key String?
-  posts              Post[]      @relation("author")
-  savedPosts         PostSaves[]
-  friends_of         Friends[]   @relation("friend")
-  friends            Friends[]   @relation("user")
-  liked_posts        PostLikes[]
+  id              String      @id @default(uuid())
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  first_name      String
+  last_name       String
+  display_name    String      @unique
+  email           String      @unique
+  password        String
+  profile_img_key String?
+  location        String?
+  biography       String?
+  banner_img_key  String?
+  banner_color    String?
+  posts           Post[]      @relation("author")
+  savedPosts      PostSaves[]
+  friends_of      Friends[]   @relation("friend")
+  friends         Friends[]   @relation("user")
+  liked_posts     PostLikes[]
 }
 
 model PostLikes {

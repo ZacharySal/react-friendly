@@ -15,7 +15,7 @@ import Dropzone from "react-dropzone";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost } from "store/postsSlice";
 
-const NewPostWidget = ({ picture_key }) => {
+const NewPostWidget = ({ profile_img_key }) => {
   const dispatch = useDispatch();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
@@ -33,6 +33,7 @@ const NewPostWidget = ({ picture_key }) => {
     if (image) {
       formData.append("picture", image);
     }
+
     dispatch(addPost({ formData }));
     setImage(null);
     setPost("");
@@ -52,7 +53,7 @@ const NewPostWidget = ({ picture_key }) => {
       padding="1rem 1.5rem 0.75rem 1rem"
       borderBottom={`1px solid ${palette.neutral.light}`}
     >
-      <UserImage picture_key={picture_key} user_id={id} size="40px" />
+      <UserImage profile_img_key={profile_img_key} user_id={id} size="40px" />
       <Box marginTop="3px">
         <InputBase
           multiline

@@ -1,15 +1,12 @@
 import { CachedOutlined } from "@mui/icons-material";
 import { Box, List, ListItem, ListItemButton, Typography, useTheme } from "@mui/material";
 import { useClickAway } from "@uidotdev/usehooks";
-import { ModalContext } from "contexts/ModalContext";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import PostStatistic from "./PostStatistic";
 
-const RepostButton = ({ repostCount, handleQuoteClick }) => {
+const RepostButton = ({ repostCount, handleQuoteClick, handleRepostClick }) => {
   const { palette } = useTheme();
   const [showSelection, setShowSelection] = useState(false);
-
-  const { modalContext } = useContext(ModalContext);
 
   const ref = useClickAway(() => {
     setShowSelection(false);
@@ -45,7 +42,7 @@ const RepostButton = ({ repostCount, handleQuoteClick }) => {
         >
           <List disablePadding>
             <ListItem disablePadding>
-              <ListItemButton onClick={handleQuoteClick}>
+              <ListItemButton onClick={handleRepostClick}>
                 <Typography variant="h6" fontWeight="500">
                   Repost
                 </Typography>

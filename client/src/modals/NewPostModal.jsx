@@ -162,8 +162,6 @@ const NewPostModal = () => {
           <InputBase
             sx={{ fontSize: "20px" }}
             multiline
-            minWidth="100%"
-            fullWidth
             value={reply}
             onChange={(e) => {
               if (reply.length <= 260) setReply(e.target.value);
@@ -174,7 +172,7 @@ const NewPostModal = () => {
           {modalContext.type === "quote" && <PostWidget post={post} />}
         </Box>
       </Box>
-      <Divider color={palette.neutral.light} mt="1rem" fullWidth flexItem />
+      <Divider color={palette.neutral.light} mt="1rem" flexItem />
       <FlexBetween marginTop="1rem" display="flex" justifyContent="end">
         <Box display="flex" gap="1rem">
           <PhotoOutlined sx={{ color: palette.primary.main, fontSize: "22px" }} />

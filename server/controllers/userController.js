@@ -1,6 +1,6 @@
 import prisma from "../prisma/prisma.js";
+import { uploadFile } from "../s3.js";
 import { postIncludeOptions } from "./postController.js";
-
 export const getUserInfo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -102,6 +102,63 @@ export const addRemoveFriend = async (req, res) => {
         posts: true,
       },
     });
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json({ msg: err.message });
+  }
+};
+
+export const updateUserInfo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { profile_image, banner_image, biography, location } = req.body;
+
+    console.log(id);
+
+    let profile_image_upload = null;
+    let banner_image_upload = null;
+
+    if (profile_image != null) {
+      profile_image_upload = await uploadFile(profile_image, true);
+      console.log(profile_image_upload);
+    }
+
+    if (banner_image != null) {
+      banner_image_upload = await uploadFile(profile_image, true);
+      console.log(banner_image_upload);
+    }
+
+    // const new_user_data = {};
+
+    // if (profile_image_upload) new_user_data["profile_img_key"] = profile_image_upload.Key;
+    // if (banner_image_upload) new_user_data["banner_img_key"] = banner_image_upload.Key;
+    // if (biography) new_user_data["biography"] = biography;
+    // if (location) new_user_data["location"] = location;
+
+    // console.log(new_user_data);
+
+    const u = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    console.log(u);
+
+    const user = await prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        profile_img_key: profile_image_upload.Key,
+        banner_img_key: banner_image_upload.Key,
+        biography: biography,
+        location: location,
+      },
+    });
+
+    console.log(user);
+
     res.status(200).json(user);
   } catch (err) {
     res.status(404).json({ msg: err.message });

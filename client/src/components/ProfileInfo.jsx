@@ -1,10 +1,13 @@
 import { Box, Button, Typography, useTheme } from "@mui/material";
+import { ModalContext } from "contexts/ModalContext";
+import { useContext } from "react";
 import { useSelector } from "react-redux";
 import FlexBetween from "./FlexBetween";
 
 const ProfileInfo = ({ user, contentCategory, setContentCategory }) => {
   const { palette } = useTheme();
   const { id } = useSelector((state) => state.user.user);
+  const { setModalContext } = useContext(ModalContext);
 
   const isSelf = id === user.id;
 
@@ -25,7 +28,7 @@ const ProfileInfo = ({ user, contentCategory, setContentCategory }) => {
               backgroundColor={palette.background.default}
             />
             <img
-              src={`http://localhost:6001/posts/image/${user.picture_key}`}
+              src={`http://localhost:6001/posts/image/${user.profile_img_key}`}
               style={{
                 height: "80px",
                 width: "80px",
@@ -39,6 +42,11 @@ const ProfileInfo = ({ user, contentCategory, setContentCategory }) => {
             />
           </Box>
           <Button
+            onClick={() => {
+              isSelf
+                ? setModalContext({ show: true, type: "profile_flow" })
+                : console.log("followed");
+            }}
             sx={{
               color: palette.neutral.lightest,
               backgroundColor: palette.neutral.darkest,
@@ -52,7 +60,7 @@ const ProfileInfo = ({ user, contentCategory, setContentCategory }) => {
               },
             }}
           >
-            <Typography variant="h5" fontWeight="600">
+            <Typography variant="h6" fontWeight="600">
               {isSelf ? "Set up profile" : "Follow"}
             </Typography>
           </Button>

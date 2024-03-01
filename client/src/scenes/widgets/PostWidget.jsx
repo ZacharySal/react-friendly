@@ -1,5 +1,6 @@
 import {
   BookmarkBorder,
+  CachedOutlined,
   ChatBubbleOutlineOutlined,
   FavoriteBorderOutlined,
   FavoriteOutlined,
@@ -16,15 +17,15 @@ import en from "javascript-time-ago/locale/en";
 import { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { deletePost, patchLike, patchSave } from "store/postsSlice";
-import { useSWRConfig } from "swr";
+import { addPost, deletePost, patchLike, patchSave } from "store/postsSlice";
 
 const PostWidget = ({
   post,
   mutateURL,
   isPostPage = false,
   isChain = false,
-  modalView = false,
+  isRepost = false,
+  condensed = false,
 }) => {
   const [showAlert, setShowAlert] = useState(false);
 
@@ -32,7 +33,6 @@ const PostWidget = ({
   const timeAgo = new TimeAgo("en-US");
   const time = timeAgo.format(new Date(post.created_at), "twitter");
 
-  const { mutate } = useSWRConfig();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { palette } = useTheme();
@@ -44,14 +44,33 @@ const PostWidget = ({
   const isSaved = Boolean(post?.saves?.some((save) => save.user_id === loggedInUserId));
   const repostCount = post?.children?.filter((post) => post?.isRepost)?.length;
 
+  const handleRepost = async () => {
+    const formData = new FormData();
+    formData.append("user_id", loggedInUserId);
+    formData.append("parent_id", post.id);
+    formData.append("isRepost", true);
+
+    dispatch(addPost({ formData, mutateKey: mutateURL }));
+    navigate(`/post/${post.id}`);
+    setModalContext({ show: false });
+  };
+
+  const handleProfileClick = (e, user_id) => {
+    e.stopPropagation();
+    navigate(`/profile/${user_id}`);
+  };
+
+  // if post is a repost without a quote
+  if (post.content == null) return <PostWidget post={post.parent} mutateURL={mutateURL} isRepost />;
+
   return (
     <Box
-      padding={modalView ? "0.75rem" : "0.75rem 1.5rem 0rem 1rem"}
+      padding={condensed ? "0.75rem" : "0.75rem 1.5rem 0rem 1rem"}
       width="100%"
       cursor="pointer"
-      border={modalView ? `1px solid ${palette.neutral.light}` : null}
-      borderRadius={modalView ? "12px" : "0px"}
-      borderBottom={isChain || modalView ? null : `1px solid ${palette.neutral.light}`}
+      border={condensed ? `1px solid ${palette.neutral.light}` : null}
+      borderRadius={condensed ? "12px" : "0px"}
+      borderBottom={isChain || condensed ? null : `1px solid ${palette.neutral.light}`}
       onClick={(e) => {
         e.stopPropagation();
         navigate(`/post/${post.id}`);
@@ -64,23 +83,38 @@ const PostWidget = ({
         },
       }}
     >
+      {isRepost && (
+        <Box
+          paddingLeft="1.5rem"
+          marginBottom="0.5rem"
+          color={palette.neutral.medium}
+          display="flex"
+          gap="0.5rem"
+          alignItems="center"
+        >
+          <CachedOutlined sx={{ color: palette.neutral.medium, fontSize: "18px" }} />
+          <Typography variant="h7" color={palette.neutral.medium} fontWeight="500">
+            {post.author.display_name} reposted
+          </Typography>
+        </Box>
+      )}
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: modalView ? null : "auto 1fr",
-          gridTemplateRows: modalView ? "auto auto" : null,
-          gap: modalView ? "0rem" : "1rem",
+          gridTemplateColumns: condensed ? null : "auto 1fr",
+          gridTemplateRows: condensed ? "auto auto" : null,
+          gap: condensed ? "0rem" : "1rem",
         }}
       >
         <Box
-          display={modalView ? "flex" : "grid"}
-          gap={modalView ? "0.5rem" : null}
-          gridTemplateRows={modalView ? null : "auto 1fr"}
+          display={condensed ? "flex" : "grid"}
+          gap={condensed ? "0.5rem" : null}
+          gridTemplateRows={condensed ? null : "auto 1fr"}
         >
           <UserImage
-            picture_key={post.author.picture_key}
+            picture_key={post.author.profile_img_key}
             user_id={post.author.id}
-            size={modalView ? "25px" : "40px"}
+            size={condensed ? "25px" : "40px"}
           />
           {isChain && (
             <Box
@@ -95,30 +129,47 @@ const PostWidget = ({
               }}
             ></Box>
           )}
-          {modalView && <AuthorInfo author={post.author} time={time} />}
+          {condensed && (
+            <AuthorInfo author={post.author} time={time} handleClick={handleProfileClick} />
+          )}
         </Box>
 
         <Box flexDirection="column">
-          {!modalView && <AuthorInfo author={post.author} time={time} />}
+          {!condensed && (
+            <AuthorInfo author={post.author} time={time} handleClick={handleProfileClick} />
+          )}
           {post.parent_id && !isPostPage && !post.isRepost && (
             <Box display="flex" alignItems="center" gap="0.2rem" mb="0.25rem">
               <Typography variant="h7" color={palette.neutral.medium}>
                 Replying to
               </Typography>
-              <Typography variant="h7" fontWeight="500" color={palette.primary.main}>
-                @{modalView ? post.author.display_name : post.parent?.author?.display_name}
+              <Typography
+                onClick={(e) =>
+                  handleProfileClick(
+                    e,
+                    condensed || isRepost ? post.author.id : post.parent?.author?.id
+                  )
+                }
+                variant="h7"
+                fontWeight="500"
+                color={palette.primary.main}
+              >
+                @
+                {condensed || isRepost
+                  ? post.author.display_name
+                  : post.parent?.author?.display_name}
               </Typography>
             </Box>
           )}
           <Typography variant="h5" lineHeight="1.4">
             {post.content}
           </Typography>
-          {post.isRepost && !modalView && !isPostPage && (
+          {post.isRepost && !condensed && !isPostPage && (
             <Box mt="0.5rem">
-              <PostWidget post={post.parent} modalView={true} />
+              <PostWidget post={post.parent} condensed={true} />
             </Box>
           )}
-          {!modalView && (
+          {!condensed && (
             <Box
               display="flex"
               mt="0.5rem"
@@ -152,6 +203,7 @@ const PostWidget = ({
               </PostStatistic>
               <RepostButton
                 repostCount={repostCount}
+                handleRepostClick={handleRepost}
                 handleQuoteClick={(e) => {
                   e.stopPropagation();
                   setModalContext({
@@ -230,7 +282,7 @@ const PostWidget = ({
   );
 };
 
-const AuthorInfo = ({ author, time }) => {
+const AuthorInfo = ({ author, time, handleClick }) => {
   const { palette } = useTheme();
   return (
     <Box
@@ -243,10 +295,20 @@ const AuthorInfo = ({ author, time }) => {
         overflow: "hidden",
       }}
     >
-      <Typography variant="h5" fontWeight="500" marginRight="0.25rem">
+      <Typography
+        onClick={(e) => handleClick(e, author.id)}
+        variant="h5"
+        fontWeight="500"
+        marginRight="0.25rem"
+        className="link"
+      >
         {`${author.first_name} ${author.last_name}`}
       </Typography>
-      <Typography variant="h6" color={palette.neutral.medium}>
+      <Typography
+        onClick={(e) => handleClick(e, author.id)}
+        variant="h6"
+        color={palette.neutral.medium}
+      >
         {` @${author.display_name}`}
       </Typography>
       <Typography variant="h6" color={palette.neutral.medium}>

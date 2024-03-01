@@ -24,7 +24,6 @@ export const addPost = createAsyncThunk(
   "posts/addPost",
   async ({ formData, mutateKey }, { getState }) => {
     const state = getState();
-    const parent_id = formData.get("parent_id");
     const response = await fetch(`http://localhost:6001/posts`, {
       method: "POST",
       headers: { Authorization: `Bearer ${state.user.token}` },

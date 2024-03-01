@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-const UserImage = ({ picture_key, user_id, size = "60px" }) => {
+const UserImage = ({ profile_img_key, user_id, size = "60px" }) => {
   return (
     <Link to={`/profile/${user_id}`}>
       <img
@@ -7,7 +7,7 @@ const UserImage = ({ picture_key, user_id, size = "60px" }) => {
         width={size}
         height={size}
         alt="user"
-        src={`http://localhost:6001/posts/image/${picture_key}`}
+        src={`http://localhost:6001/posts/image/${profile_img_key}`}
       />
     </Link>
   );

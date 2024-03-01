@@ -34,7 +34,7 @@ const NewComment = ({ post_id, replyingTo, setReplyingTo }) => {
   return (
     <>
       <Box sx={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.75rem" }}>
-        <UserImage picture_key={user.picture_key} size="40px" />
+        <UserImage picture_key={user.profile_img_key} size="40px" />
         <Box
           sx={{
             width: "100%",

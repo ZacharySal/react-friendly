@@ -1,7 +1,7 @@
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 
-const MenuOption = ({ icon, text, link = "/home", onClick = null }) => {
+const MenuOption = ({ icon, text, link = "", onClick = null }) => {
   const { palette } = useTheme();
   const isDesktopScreen = useMediaQuery("(min-width:700px)");
 

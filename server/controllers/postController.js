@@ -46,8 +46,12 @@ export const createPost = async (req, res) => {
 export const getImage = async (req, res) => {
   try {
     const key = req.params.key;
-    const readStream = getFileStream(key);
-    readStream.pipe(res);
+    if (key != "null") {
+      const readStream = getFileStream(key);
+      readStream.pipe(res);
+    } else {
+      throw new Error("No key provided");
+    }
   } catch (err) {
     res.status(404).json({ msg: err.message });
   }
@@ -325,6 +329,9 @@ export const postIncludeOptions = {
   parent: {
     include: {
       author: true,
+      likes: true,
+      saves: true,
+      children: true,
     },
   },
   likes: true,

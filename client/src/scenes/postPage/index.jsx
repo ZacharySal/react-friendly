@@ -27,7 +27,7 @@ const fetcher = (url) => fetch(url).then((r) => r.json());
 
 const setScrollPosition = (element) => {
   window.scrollTo({
-    top: element.current.offsetTop,
+    top: element.current.offsetTop - 20,
     behavior: "auto",
   });
 };
@@ -66,6 +66,8 @@ const FullPost = ({ postInfo }) => {
   const isLiked = Boolean(post?.likes.some((like) => like.user_id === id));
   const isSaved = Boolean(post?.saves.some((save) => save.user_id === id));
   const { time, date } = getDateAndTime(post.created_at);
+
+  const replies = post?.children?.filter((post) => post.content != null);
 
   const handlePost = async () => {
     const formData = new FormData();
@@ -161,7 +163,7 @@ const FullPost = ({ postInfo }) => {
           {/* POST CONTENT */}
           <Box display="flex" flexDirection="column" gap="1rem" mb="1rem">
             <Typography variant="h4">{post.content}</Typography>
-            {post.isRepost && <PostWidget post={post.parent} modalView={true} />}
+            {post.isRepost && <PostWidget post={post.parent} condensed={true} />}
           </Box>
           {/* TIME, DATE, VIEW COUNT */}
           <Box display="flex" mb="1rem">
@@ -338,7 +340,7 @@ const FullPost = ({ postInfo }) => {
           </Box>
         </Box>
       </Box>
-      {post?.children?.map((childPost) => (
+      {replies?.map((childPost) => (
         <PostWidget
           key={childPost.id}
           post={childPost}

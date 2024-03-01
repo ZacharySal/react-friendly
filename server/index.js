@@ -1,20 +1,19 @@
-import express from "express";
 import bodyParser from "body-parser";
-import mongoose, { Mongoose } from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import multer from "multer";
-import helmet from "helmet";
+import express from "express";
 import morgan from "morgan";
+import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
-import { verifyToken } from "./middleware/authorizeUser.js";
 import { register } from "./controllers/authController.js";
 import { createPost } from "./controllers/postController.js";
-import authRouter from "./routes/authRouter.js";
-import userRouter from "./routes/userRouter.js";
-import postRouter from "./routes/postRouter.js";
+import { updateUserInfo } from "./controllers/userController.js";
+import { verifyToken } from "./middleware/authorizeUser.js";
 import prisma from "./prisma/prisma.js";
+import authRouter from "./routes/authRouter.js";
+import postRouter from "./routes/postRouter.js";
+import userRouter from "./routes/userRouter.js";
 
 /* CONFIG */
 const __filename = fileURLToPath(import.meta.url);
@@ -30,11 +29,24 @@ app.use(cors({ origin: "*" }));
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 /* FILE STORAGE*/
-const upload = multer({ dest: "image_uploads/" });
+const upload = multer({ dest: "image_uploads/", limits: { fieldSize: 100 * 1024 * 1024 } });
 
 /* ROUTES WITH FILES */
 app.post("/auth/register", upload.single("picture"), register);
 app.post("/posts", verifyToken, upload.single("picture"), createPost);
+app.patch("/user/:id", verifyToken, upload.single("picture"), updateUserInfo);
+
+// app.post("/testing", verifyToken, upload.single("picture"), async function (req, res, next) {
+//   // req.file is the `profile-file` file
+//   // req.body will hold the text fields, if there were any
+//   if (req.file) {
+//     const file = req.file;
+//     let result = await uploadFile(file);
+//     console.log(result);
+//   }
+
+//   return res.status(200);
+// });
 
 /* ROUTES */
 app.use("/auth", authRouter);
@@ -42,20 +54,6 @@ app.use("/users", userRouter);
 app.use("/posts", postRouter);
 
 const PORT = process.env.PORT || 6001;
-
-/* MONGOOSE SETUP */
-// const connect_database = async () => {
-//   try {
-//     await mongoose.connect(process.env.MONGO_URL, {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//     });
-//     app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
-//   } catch (error) {
-//     console.log(`${error} did not connect`);
-//   }
-// };
-//connect_database();
 
 async function main() {
   await prisma.$connect();

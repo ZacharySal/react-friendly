@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   mode: "light",
@@ -17,6 +17,26 @@ export const patchFriend = createAsyncThunk(
       method: "PATCH",
       headers: { Authorization: `Bearer ${state.user.token}` },
       "Content-Type": "application/json",
+    });
+    if (response.status === 200) {
+      const data = await response.json();
+      return data;
+    } else {
+      return rejectWithValue("Failed to add/remove friend.");
+    }
+  }
+);
+
+export const patchUser = createAsyncThunk(
+  "user/patchUser",
+  async (formData, { getState, rejectWithValue }) => {
+    console.log(formData);
+    const state = getState();
+    const response = await fetch(`http://localhost:6001/user/${state.user.user.id}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${state.user.token}` },
+      "Content-Type": "multipart/form-data",
+      body: formData,
     });
     if (response.status === 200) {
       const data = await response.json();
@@ -64,6 +84,17 @@ export const userSlice = createSlice({
         state.user.friends = action.payload.friends;
       })
       .addCase(patchFriend.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(patchUser.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(patchUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload;
+      })
+      .addCase(patchUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

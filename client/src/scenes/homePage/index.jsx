@@ -6,7 +6,7 @@ import NewPostWidget from "../widgets/NewPostWidget";
 import PostsWidget from "../widgets/PostsWidget";
 
 const HomePage = () => {
-  const { picture_key } = useSelector((state) => state.user.user);
+  const { profile_img_key } = useSelector((state) => state.user.user);
   const posts = useSelector((state) => state.posts.posts);
   const { palette } = useTheme();
   const [postType, setPostType] = useState("feed");
@@ -71,7 +71,7 @@ const HomePage = () => {
             </Box>
           </Box>
         </Box>
-        <NewPostWidget picture_key={picture_key} />
+        <NewPostWidget profile_img_key={profile_img_key} />
         <PostsWidget posts={posts} />
       </Box>
     </Layout>

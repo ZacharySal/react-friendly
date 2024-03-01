@@ -9,9 +9,9 @@ body,
   font-family: "Rubik", sans-serif;
 }
 
-input::placeholder {
+/* input::placeholder {
   font-size: 20px;
-}
+} */
 
 body:has(#modal) {
   pointer-events: none;
@@ -28,6 +28,10 @@ body:has(#modal) {
   grid-template-columns: auto 1fr;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
 
 @media screen and (min-width:1000px) {
