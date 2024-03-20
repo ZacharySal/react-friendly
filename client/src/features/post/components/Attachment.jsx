@@ -23,7 +23,7 @@ const Attachment = memo(function Attachment({ attachment_key, border = true }) {
             style={{
               border: border && `1px solid ${palette.neutral.medium}`,
             }}
-            src={`http://192.168.1.247:6001/image/${attachment_key}`}
+            src={`http://localhost:6001/image/${attachment_key}`}
           />
         </Box>
       )}

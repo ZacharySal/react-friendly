@@ -11,7 +11,7 @@ export const addPost = createAsyncThunk(
   async ({ formData, mutateKey }, { getState }) => {
     console.log(formData);
     const state = getState();
-    const response = await fetch(`http://192.168.1.247:6001/posts`, {
+    const response = await fetch(`http://localhost:6001/posts`, {
       method: "POST",
       headers: { Authorization: `Bearer ${state.user.token}` },
       body: formData,
@@ -26,7 +26,7 @@ export const deletePost = createAsyncThunk(
   "posts/deletePost",
   async (post_id, { getState, reject }) => {
     const state = getState();
-    const response = await fetch(`http://192.168.1.247:6001/posts/${post_id}`, {
+    const response = await fetch(`http://localhost:6001/posts/${post_id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${state.user.token}` },
     });
@@ -42,7 +42,7 @@ export const patchLike = createAsyncThunk(
   "posts/patchLike",
   async ({ post_id, mutateKey }, { getState }) => {
     const state = getState();
-    const response = await fetch(`http://192.168.1.247:6001/posts/${post_id}/like`, {
+    const response = await fetch(`http://localhost:6001/posts/${post_id}/like`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${state.user.token}`,
@@ -60,7 +60,7 @@ export const patchSave = createAsyncThunk(
   "posts/patchSave",
   async ({ post_id, mutateKey }, { getState }) => {
     const state = getState();
-    const response = await fetch(`http://192.168.1.247:6001/posts/${post_id}/save`, {
+    const response = await fetch(`http://localhost:6001/posts/${post_id}/save`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${state.user.token}`,

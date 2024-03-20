@@ -10,7 +10,7 @@ const fetcher = (url) => fetch(url).then((r) => r.json());
 const BookmarksPage = () => {
   const { id } = useSelector((state) => state.user.user);
   const { data: posts, isLoading } = useSWR(
-    `http://192.168.1.247:6001/users/${id}/savedPosts`,
+    `http://localhost:6001/users/${id}/savedPosts`,
     fetcher
   );
 
@@ -40,7 +40,7 @@ const BookmarksPage = () => {
             <Post
               key={post.post.id}
               post={post.post}
-              mutateKey={`http://192.168.1.247:6001/users/${id}/savedPosts`}
+              mutateKey={`http://localhost:6001/users/${id}/savedPosts`}
             />
           ))
         )}

@@ -43,7 +43,7 @@ const ProfileInfo = ({ user }) => {
     <Box display="flex" flexDirection="column">
       <img
         alt=""
-        src={`http://192.168.1.247:6001/image/${user.banner_img_key}`}
+        src={`http://localhost:6001/image/${user.banner_img_key}`}
         style={{ maxWidth: "100%", maxHeight: "160px", objectFit: "cover" }}
       />
       <Box className="px-2 md:px-4">
@@ -57,7 +57,7 @@ const ProfileInfo = ({ user }) => {
               backgroundColor={palette.background.default}
             />
             <img
-              src={`http://192.168.1.247:6001/image/${user.profile_img_key}`}
+              src={`http://localhost:6001/image/${user.profile_img_key}`}
               alt=""
               className="absolute left-0 top-[-20px] h-[80px] w-[80px] rounded-full object-cover"
               style={{

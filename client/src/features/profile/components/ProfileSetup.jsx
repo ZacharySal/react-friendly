@@ -43,7 +43,7 @@ const ProfileSetup = () => {
     formData.append("biography", newUserInfo.biography);
     formData.append("location", newUserInfo.location);
     dispatch(patchUser(formData));
-    setTimeout(() => mutate([`http://192.168.1.247:6001/users/${user.id}`, token]), 1000);
+    setTimeout(() => mutate([`http://localhost:6001/users/${user.id}`, token]), 1000);
   };
 
   const setUserProps = {
@@ -97,7 +97,7 @@ const ImageSelectionStep = ({ type, newUserInfo, setNewUserInfo }) => {
 
   const currImgKey = isUserImage ? profile_img_key : banner_img_key;
 
-  const [image, setImage] = useState(`http://192.168.1.247:6001/image/${currImgKey}`);
+  const [image, setImage] = useState(`http://localhost:6001/image/${currImgKey}`);
 
   console.log(image);
 

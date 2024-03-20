@@ -17,7 +17,7 @@ const fetcher = async (params) => {
 
 const UserMedia = ({ user_id }) => {
   const token = useSelector((state) => state.user.token);
-  const key = `http://192.168.1.247:6001/users/${user_id}/media`;
+  const key = `http://localhost:6001/users/${user_id}/media`;
   const { data: media, isLoading } = useSWR([key, token], fetcher);
   return (
     <>

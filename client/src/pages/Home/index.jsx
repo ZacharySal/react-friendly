@@ -14,9 +14,7 @@ const HomePage = () => {
   const [postType, setPostType] = useState("feed");
 
   const key =
-    postType === "feed"
-      ? "http://192.168.1.247:6001/posts/"
-      : `http://192.168.1.247:6001/users/${id}/feed`;
+    postType === "feed" ? "http://localhost:6001/posts/" : `http://localhost:6001/users/${id}/feed`;
 
   const { data, isLoading } = useSWR(key, fetcher);
 
@@ -32,7 +30,7 @@ const HomePage = () => {
         <LoadingAnimation />
       ) : (
         data?.map((post) => (
-          <Post key={post.id} post={post} mutateKey={"http://192.168.1.247:6001/posts/"} />
+          <Post key={post.id} post={post} mutateKey={"http://localhost:6001/posts/"} />
         ))
       )}
     </Box>

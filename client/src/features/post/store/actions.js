@@ -1,7 +1,7 @@
 import { setModal } from "src/store/slices/appSlice";
 import { addPost, patchLike, patchSave } from "src/store/slices/postsSlice";
 import { store } from "src/store/store.js";
-const DEFAULT_MUTATE_KEY = "http://192.168.1.247:6001/posts/";
+const DEFAULT_MUTATE_KEY = "http://localhost:6001/posts/";
 
 export const handleLikePost = (postId, mutateKey) => {
   store.dispatch(

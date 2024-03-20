@@ -30,7 +30,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState("posts");
 
-  const key = `http://192.168.1.247:6001/users/${user_id}`;
+  const key = `http://localhost:6001/users/${user_id}`;
   const { data: user, isLoading } = useSWR([key, token], fetcher);
 
   let selectedMedia = [];

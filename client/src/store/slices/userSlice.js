@@ -14,7 +14,7 @@ export const patchFollow = createAsyncThunk(
     console.log("[atch follow ");
     const state = getState();
     const response = await fetch(
-      `http://192.168.1.247:6001/users/${state.user.user.id}/${followee_id}`,
+      `http://localhost:6001/users/${state.user.user.id}/${followee_id}`,
       {
         method: "PATCH",
         headers: { Authorization: `Bearer ${state.user.token}` },
@@ -34,7 +34,7 @@ export const patchUser = createAsyncThunk(
   "user/patchUser",
   async (formData, { getState, rejectWithValue }) => {
     const state = getState();
-    const response = await fetch(`http://192.168.1.247:6001/user/${state.user.user.id}`, {
+    const response = await fetch(`http://localhost:6001/user/${state.user.user.id}`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${state.user.token}` },
       "Content-Type": "multipart/form-data",

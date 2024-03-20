@@ -31,7 +31,7 @@ const PostPage = () => {
   const { post_id } = useParams();
 
   const { data: postInfo, isLoading } = useSWR(
-    `http://192.168.1.247:6001/posts/post/${post_id}`,
+    `http://localhost:6001/posts/post/${post_id}`,
     fetcher
   );
 
@@ -85,7 +85,7 @@ const FullPost = ({ postInfo }) => {
       formData.append(name, attachment.content);
     }
 
-    handleAddPost(formData, `http://192.168.1.247:6001/posts/post/${post_id}`);
+    handleAddPost(formData, `http://localhost:6001/posts/post/${post_id}`);
   };
 
   useEffect(() => {
@@ -313,7 +313,7 @@ const FullPost = ({ postInfo }) => {
         <Post
           key={childPost.id}
           post={childPost}
-          mutateKey={`http://192.168.1.247:6001/posts/post/${post_id}`}
+          mutateKey={`http://localhost:6001/posts/post/${post_id}`}
           isPostPage={true}
         />
       ))}

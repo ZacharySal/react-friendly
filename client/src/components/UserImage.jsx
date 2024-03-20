@@ -19,7 +19,7 @@ const UserImage = ({ profile_img_key, id, size = "60px" }) => {
       width={size}
       height={size}
       alt="user"
-      src={`http://192.168.1.247:6001/image/${profile_img_key}`}
+      src={`http://localhost:6001/image/${profile_img_key}`}
     />
   );
 };

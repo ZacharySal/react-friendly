@@ -19,7 +19,7 @@ export const handleQuoteClick = (e, post) => {
   });
 };
 
-export const handleRepostClick = (e, post, mutateKey = "http://192.168.1.247:6001/posts/") => {
+export const handleRepostClick = (e, post, mutateKey = "http://localhost:6001/posts/") => {
   e.stopPropagation();
   const formData = new FormData();
   const loggedInUserId = store.getState().user.user.id;

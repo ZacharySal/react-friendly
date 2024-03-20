@@ -26,20 +26,11 @@ function App() {
           <CssBaseline />
           <Routes>
             <Route path="/" element={<LoginPage />} />
-            <Route element={<PageWrapper />}>
-              <Route path="/home" element={isAuthorized ? <HomePage /> : <Navigate to="/" />} />
-              <Route
-                path="/post/:post_id"
-                element={isAuthorized ? <PostPage /> : <Navigate to="/" />}
-              />
-              <Route
-                path="/profile/:user_id"
-                element={isAuthorized ? <ProfilePage /> : <Navigate to="/" />}
-              />
-              <Route
-                path="/bookmarks"
-                element={isAuthorized ? <BookmarksPage /> : <Navigate to="/" />}
-              />
+            <Route element={isAuthorized ? <PageWrapper /> : <Navigate to="/" />}>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/post/:post_id" element={<PostPage />} />
+              <Route path="/profile/:user_id" element={<ProfilePage />} />
+              <Route path="/bookmarks" element={<BookmarksPage />} />
             </Route>
           </Routes>
         </ThemeProvider>
