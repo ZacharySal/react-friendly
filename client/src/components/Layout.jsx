@@ -1,85 +1,21 @@
-import {
-  BookmarkBorderOutlined,
-  DarkModeOutlined,
-  HomeOutlined,
-  LightModeOutlined,
-  MessageOutlined,
-  NotificationsOutlined,
-  PersonOutlineOutlined,
-  SearchOutlined,
-} from "@mui/icons-material";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import { ModalContext } from "contexts/ModalContext";
-import ModalProvider from "modals/ModalProvider";
-import { useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { setMode } from "store/userSlice";
-import MenuOption from "./MenuOption";
+import { useSelector } from "react-redux";
+import ModalProvider from "src/modals/ModalProvider";
+import Navbar from "./Navbar";
 
 const Layout = ({ children }) => {
-  const isDesktopScreen = useMediaQuery("(min-width:700px)");
+  const isDesktopScreen = useMediaQuery("(min-width:1024px)");
   const { palette } = useTheme();
 
-  const dispatch = useDispatch();
-  const { id: loggedInUserId } = useSelector((state) => state.user.user);
-
-  const { modalContext } = useContext(ModalContext);
+  const modal = useSelector((state) => state.app.modal);
 
   return (
     <Box>
-      {modalContext.show && <ModalProvider />}
-      <div className="main-container">
-        <Box display="flex" flexDirection="column" alignItems="start" gap="0.5rem" mt="1rem">
-          {isDesktopScreen ? (
-            <Link
-              to="/home"
-              style={{
-                textDecoration: "none",
-                width: "100%",
-                fontWeight: "bold",
-                fontSize: "clamp(1rem,1.5rem,2rem)",
-                color: palette.primary.main,
-                paddingLeft: "10px",
-                "&:hover": {
-                  cursor: "pointer",
-                },
-              }}
-            >
-              Friendly
-            </Link>
-          ) : (
-            <Box display="flex" minWidth="100%" justifyContent="center" padding="5px">
-              <img style={{ maxWidth: "100%" }} alt="" src="../assets/logo.svg"></img>
-            </Box>
-          )}
-          <MenuOption icon={<HomeOutlined fontSize="large" />} link="/home" text={"Home"} />
-          <MenuOption icon={<SearchOutlined fontSize="large" />} text={"Search"} />
-          <MenuOption icon={<MessageOutlined fontSize="large" />} text={"Messages"} />
-          <MenuOption icon={<NotificationsOutlined fontSize="large" />} text={"Notifications"} />
-          <MenuOption icon={<BookmarkBorderOutlined fontSize="large" />} text={"Bookmarks"} />
-          <MenuOption
-            icon={<PersonOutlineOutlined fontSize="large" />}
-            link={`/profile/${loggedInUserId}`}
-            text={"Profile"}
-          />
-          <MenuOption
-            icon={
-              palette.mode === "dark" ? (
-                <LightModeOutlined fontSize="large" />
-              ) : (
-                <DarkModeOutlined fontSize="large" />
-              )
-            }
-            text={palette.mode === "dark" ? "Light Mode" : "Dark Mode"}
-            onClick={() => dispatch(setMode())}
-          />
-        </Box>
-
+      {modal.enabled && <ModalProvider />}
+      <main className="grid h-auto w-full max-w-full grid-cols-[55px_1fr] justify-center lg:grid-cols-[250px_600px] lg:px-[8%]">
+        <Navbar />
         <Box
-          width="100%"
-          overflow="hidden"
-          padding="0"
+          className="min-h-[1056px] max-w-full"
           borderLeft={`1px solid ${palette.neutral.light}`}
           borderRight={`1px solid ${palette.neutral.light}`}
         >
@@ -92,7 +28,7 @@ const Layout = ({ children }) => {
             {/* <FriendListWidget key={id} userId={id} /> */}
           </Box>
         )}
-      </div>
+      </main>
     </Box>
   );
 };

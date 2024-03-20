@@ -20,6 +20,15 @@ export const colorTokens = {
 // mui theme settings
 export const themeSettings = (mode) => {
   return {
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: "unset",
+          },
+        },
+      },
+    },
     palette: {
       mode: mode,
       ...(mode === "dark"
@@ -39,7 +48,8 @@ export const themeSettings = (mode) => {
               lightest: colorTokens.grey[1000],
             },
             background: {
-              default: colorTokens.grey[900], // black
+              default: colorTokens.grey[1000], // black
+              paper: colorTokens.grey[1000], // black
               alt: colorTokens.grey[800], // less black
             },
           }
@@ -59,45 +69,45 @@ export const themeSettings = (mode) => {
               darkest: colorTokens.grey[1000],
             },
             background: {
-              default: colorTokens.grey[10], // less white
-              alt: colorTokens.grey[0], // white
+              default: colorTokens.grey[0], // less white
+              alt: colorTokens.grey[10], // white
             },
           }),
     },
     typography: {
-      fontFamily: ["Rubik", "sans-serif"].join(","),
+      fontFamily: ["Roboto", "sans-serif"].join(","),
       fontSize: 12,
       h1: {
-        fontFamily: ["Rubik", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "sans-serif"].join(","),
         fontSize: 40,
       },
       h2: {
-        fontFamily: ["Rubik", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "sans-serif"].join(","),
         fontSize: 32,
       },
       h3: {
-        fontFamily: ["Rubik", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "sans-serif"].join(","),
         fontSize: 24,
       },
       h4: {
-        fontFamily: ["Rubik", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "sans-serif"].join(","),
         fontSize: 20,
       },
       h5: {
-        fontFamily: ["Rubik", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "sans-serif"].join(","),
         fontSize: 16,
       },
       h6: {
-        fontFamily: ["Rubik", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "sans-serif"].join(","),
         fontSize: 15,
         fontWeight: 400,
       },
       h7: {
-        fontFamily: ["Rubik", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "sans-serif"].join(","),
         fontSize: 14,
       },
       h8: {
-        fontFamily: ["Rubik", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "sans-serif"].join(","),
         fontSize: 12,
       },
     },

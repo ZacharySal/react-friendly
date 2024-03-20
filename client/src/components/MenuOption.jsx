@@ -1,40 +1,40 @@
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 
-const MenuOption = ({ icon, text, link = "", onClick = null }) => {
+const MenuOption = ({ icon, text, link = {}, onClick = null }) => {
   const { palette } = useTheme();
-  const isDesktopScreen = useMediaQuery("(min-width:700px)");
+  const isDesktopScreen = useMediaQuery("(min-width:1024px)");
 
   return (
-    <Box
-      onClick={onClick}
-      sx={{
-        cursor: "pointer",
-        minWidth: "100%",
-        "&:hover #menu-option": {
-          cursor: "pointer",
-          backgroundColor: palette.neutral.light,
-        },
-      }}
-    >
+    <Link to={link} onClick={onClick}>
       <Box
-        id="menu-option"
-        borderRadius="10px"
-        padding="10px"
-        paddingRight={isDesktopScreen ? "20px" : "10px"}
-        width={isDesktopScreen ? "min-content" : "100%"}
-        justifyContent={isDesktopScreen ? "center" : "flex-start"}
+        className="cursor-pointer max-w-full overflow-hidden"
+        sx={{
+          "&:hover #menu-option": {
+            backgroundColor: isDesktopScreen ? palette.neutral.light : "transparent",
+          },
+        }}
       >
-        <Link to={link} style={{ display: "flex", gap: "1rem" }}>
-          {icon}
-          {isDesktopScreen && (
-            <Typography variant="h4" whiteSpace="nowrap">
-              {text}
-            </Typography>
-          )}
-        </Link>
+        <Box
+          id="menu-option"
+          borderRadius="10px"
+          padding="10px"
+          paddingRight={isDesktopScreen ? "20px" : "10px"}
+          width={isDesktopScreen ? "min-content" : "auto"}
+          justifyContent={isDesktopScreen ? "center" : "flex-start"}
+          alignItems={"center"}
+        >
+          <Box className="flex items-center gap-3">
+            {icon}
+            {isDesktopScreen && (
+              <Typography variant="h4" whiteSpace="nowrap">
+                {text}
+              </Typography>
+            )}
+          </Box>
+        </Box>
       </Box>
-    </Box>
+    </Link>
   );
 };
 

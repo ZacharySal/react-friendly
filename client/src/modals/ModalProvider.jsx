@@ -1,7 +1,8 @@
-import { ModalContext } from "contexts/ModalContext";
-import { useContext } from "react";
-import NewPostModal from "./NewPostModal";
-import ProfileSetup from "./ProfileSetup";
+import { useMediaQuery } from "@uidotdev/usehooks";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import NewPostModal from "src/features/post/components/NewPostModal";
+import ProfileSetup from "src/features/profile/components/ProfileSetup";
 
 const modalOptions = {
   reply: <NewPostModal />,
@@ -10,9 +11,16 @@ const modalOptions = {
 };
 
 const ModalProvider = () => {
-  const { modalContext } = useContext(ModalContext);
+  const modal = useSelector((state) => state.app.modal);
+  const isDesktopScreen = useMediaQuery("(min-width: 768px)");
 
-  return modalOptions[modalContext.type];
+  useEffect(() => {
+    if (modal.enabled && !isDesktopScreen) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [modal, isDesktopScreen]);
+
+  return modalOptions[modal.type];
 };
 
 export default ModalProvider;
