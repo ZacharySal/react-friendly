@@ -1,17 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../prisma/prisma.js";
-import { uploadFile } from "../s3.js";
 
 /* REGISTER USER */
 export const register = async (req, res) => {
   try {
-    let result;
-    if (req.file) {
-      const file = req.file;
-      result = await uploadFile(file);
-    }
-
     const { firstName, lastName, displayName, email, password } = req.body;
 
     const salt = await bcrypt.genSalt();
@@ -24,8 +17,8 @@ export const register = async (req, res) => {
         display_name: displayName,
         email: email.toLowerCase(),
         password: passwordHash,
-        profile_img_key: req.file ? result.Key : "f516ddf3458951425013d41b0a9742b0",
-        banner_img_key: null,
+        profile_img_key: "1710658912947",
+        banner_img_key: "1710658912949",
         location: null,
         biography: null,
       },
@@ -50,11 +43,8 @@ export const login = async (req, res) => {
         email: updatedEmail,
       },
       include: {
-        friends: {
-          include: {
-            friend: true,
-          },
-        },
+        following: true,
+        followers: true,
         posts: true,
       },
     });

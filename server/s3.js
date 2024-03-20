@@ -1,7 +1,5 @@
-import S3 from "aws-sdk/clients/s3.js";
+import { DeleteObjectCommand, GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
-import fs from "fs";
-import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 
@@ -10,41 +8,41 @@ const region = process.env.AWS_BUCKET_REGION;
 const accessKeyId = process.env.AWS_ACCESS_KEY;
 const secretAccessKey = process.env.AWS_SECRET_KEY;
 
-const s3 = new S3({
+const client = new S3Client({
+  credentials: {
+    accessKeyId,
+    secretAccessKey,
+  },
   region,
-  accessKeyId,
-  secretAccessKey,
 });
 
-// upload file to s3
-export const uploadFile = (file, isBlob) => {
-  const fileStream = isBlob ? file : fs.createReadStream(file.path);
-
-  const uploadParams = {
-    Bucket: bucketName,
-    Body: fileStream,
-    Key: isBlob ? uuidv4() : file.filename,
-  };
-
-  return s3.upload(uploadParams).promise();
-};
-
 // delete file from s3
-export const deleteFile = (picture_key) => {
-  const params = {
+export const deleteFileByKey = async (key) => {
+  const command = new DeleteObjectCommand({
     Bucket: bucketName,
-    Key: picture_key,
-  };
+    Key: key,
+  });
 
-  return s3.deleteObject(params).promise();
+  try {
+    const response = await client.send(command);
+    return response;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 // download file from s3
-export const getFileStream = (fileKey) => {
-  const downloadParams = {
+export const getFileStream = async (key) => {
+  const command = new GetObjectCommand({
     Bucket: bucketName,
-    Key: fileKey,
-  };
+    Key: key,
+  });
 
-  return s3.getObject(downloadParams).createReadStream();
+  try {
+    const response = await client.send(command);
+    // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
+    return response.Body;
+  } catch (err) {
+    console.error(err);
+  }
 };

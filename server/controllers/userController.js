@@ -1,6 +1,7 @@
 import prisma from "../prisma/prisma.js";
-import { uploadFile } from "../s3.js";
+import { deleteFileByKey } from "../s3.js";
 import { postIncludeOptions } from "./postController.js";
+
 export const getUserInfo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -9,13 +10,13 @@ export const getUserInfo = async (req, res) => {
         id: id,
       },
       include: {
-        friends: {
-          include: {
-            friend: true,
-          },
-        },
+        followers: true,
+        following: true,
         posts: {
           include: postIncludeOptions,
+          orderBy: {
+            created_at: "desc",
+          },
         },
       },
     });
@@ -48,44 +49,97 @@ export const getUserFriends = async (req, res) => {
   }
 };
 
-export const addRemoveFriend = async (req, res) => {
+export const getUserMedia = async (req, res) => {
   try {
-    const { id, friendId } = req.params;
-
-    // if record already exists in table (they are friends), remove both, otherwise add both
-
-    const isFriends = await prisma.friends.findFirst({
+    const { id } = req.params;
+    const user = await prisma.user.findUnique({
       where: {
-        user_id: id,
-        friend_id: friendId,
+        id: id,
+      },
+      include: {
+        posts: {
+          include: postIncludeOptions,
+          orderBy: {
+            created_at: "desc",
+          },
+        },
       },
     });
 
-    if (isFriends) {
-      // delete both records
-      await prisma.friends.delete({
-        where: {
-          friends: {
-            user_id: id,
-            friend_id: friendId,
+    const userMedia = user.posts
+      .map((post) => {
+        console.log(post.attachment_key);
+        if (post.attachment_key) {
+          console.log("here");
+          console.log(post.attachment_key);
+          return post.attachment_key;
+        }
+      })
+      .filter(Boolean);
+
+    res.status(200).json(userMedia);
+  } catch (err) {
+    console.log(err.message);
+    res.status(404).json({ msg: err.message });
+  }
+};
+
+export const getUserSavedPosts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        savedPosts: {
+          include: {
+            post: {
+              include: postIncludeOptions,
+            },
+          },
+          orderBy: {
+            created_at: "desc",
           },
         },
-      });
-      await prisma.friends.delete({
+      },
+    });
+
+    res.status(200).json(user.savedPosts);
+  } catch (err) {
+    console.log(err.message);
+    res.status(404).json({ msg: err.message });
+  }
+};
+
+export const followUnfollowUser = async (req, res) => {
+  try {
+    const { id, followeeId } = req.params;
+
+    // if record already exists in table (they are friends), remove both, otherwise add both
+
+    const isFollowing = await prisma.followers.findFirst({
+      where: {
+        follower_id: id,
+        followee_id: followeeId,
+      },
+    });
+
+    if (isFollowing) {
+      await prisma.followers.delete({
         where: {
-          friends: {
-            user_id: friendId,
-            friend_id: id,
+          followers: {
+            follower_id: id,
+            followee_id: followeeId,
           },
         },
       });
     } else {
       // add both records
-      await prisma.friends.createMany({
-        data: [
-          { user_id: id, friend_id: friendId },
-          { user_id: friendId, friend_id: id },
-        ],
+      await prisma.followers.create({
+        data: { follower_id: id, followee_id: followeeId },
       });
     }
 
@@ -94,16 +148,18 @@ export const addRemoveFriend = async (req, res) => {
         id: id,
       },
       include: {
-        friends: {
-          include: {
-            friend: true,
-          },
+        followers: true,
+        following: true,
+        posts: {
+          include: postIncludeOptions,
         },
-        posts: true,
       },
     });
+
+    console.log(user);
     res.status(200).json(user);
   } catch (err) {
+    console.log(err.message);
     res.status(404).json({ msg: err.message });
   }
 };
@@ -111,56 +167,74 @@ export const addRemoveFriend = async (req, res) => {
 export const updateUserInfo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { profile_image, banner_image, biography, location } = req.body;
+    const { biography, location } = req.body;
+    const files = req.files;
 
-    console.log(id);
-
-    let profile_image_upload = null;
-    let banner_image_upload = null;
-
-    if (profile_image != null) {
-      profile_image_upload = await uploadFile(profile_image, true);
-      console.log(profile_image_upload);
-    }
-
-    if (banner_image != null) {
-      banner_image_upload = await uploadFile(profile_image, true);
-      console.log(banner_image_upload);
-    }
-
-    // const new_user_data = {};
-
-    // if (profile_image_upload) new_user_data["profile_img_key"] = profile_image_upload.Key;
-    // if (banner_image_upload) new_user_data["banner_img_key"] = banner_image_upload.Key;
-    // if (biography) new_user_data["biography"] = biography;
-    // if (location) new_user_data["location"] = location;
-
-    // console.log(new_user_data);
-
-    const u = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: id,
       },
     });
 
-    console.log(u);
+    if (files?.profile_image) {
+      //await fs.remove(files.profile_image[0].path);
+      if (user.profile_img_key) {
+        await deleteFileByKey(user.profile_img_key);
+      }
+    }
+    if (files?.banner_image) {
+      //await fs.remove(files.banner_image[0].path);
+      if (user.banner_img_key) {
+        await deleteFileByKey(user.banner_img_key);
+      }
+    }
 
-    const user = await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: {
         id: id,
       },
       data: {
-        profile_img_key: profile_image_upload.Key,
-        banner_img_key: banner_image_upload.Key,
-        biography: biography,
-        location: location,
+        profile_img_key: files?.profile_image?.[0]?.key || user.profile_img_key,
+        banner_img_key: files?.banner_image?.[0]?.key || user.banner_img_key,
+        biography: biography === "null" ? user.biography : biography,
+        location: location === "null" ? user.location : location,
       },
     });
 
-    console.log(user);
-
-    res.status(200).json(user);
+    res.status(200).json(updatedUser);
   } catch (err) {
+    console.log(err);
+    res.status(404).json({ msg: err.message });
+  }
+};
+
+export const getUserFeed = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const usersFollowed = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        following: true,
+      },
+    });
+
+    const usersFollowedPosts = await Promise.all(
+      usersFollowed?.following?.map(async (user) => {
+        return await prisma.post.findMany({
+          where: {
+            author_id: user.followee_id,
+          },
+          include: postIncludeOptions,
+        });
+      })
+    );
+
+    res.status(200).json(usersFollowedPosts.flat(Infinity).reverse());
+  } catch (err) {
+    console.log(err);
     res.status(404).json({ msg: err.message });
   }
 };

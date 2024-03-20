@@ -1,42 +1,24 @@
 import prisma from "../prisma/prisma.js";
-import { deleteFile, getFileStream, uploadFile } from "../s3.js";
+import { deleteFileByKey } from "../s3.js";
 
 export const createPost = async (req, res) => {
   try {
-    let result;
-
-    if (req.file) {
-      const file = req.file;
-      result = await uploadFile(file);
-    }
-
-    const { user_id, content, parent_id, isRepost } = req.body;
-
-    console.log(user_id, content, parent_id, isRepost);
-
-    console.log(Boolean(isRepost));
-
-    let options = {
-      author_id: user_id,
-      picture_key: req.file ? result.Key : null,
-      content,
-      isRepost: isRepost === "true" ? true : false,
-    };
-
-    options = parent_id ? { ...options, parent_id: parent_id } : options;
-
-    await prisma.post.create({
-      data: options,
-    });
-
-    const allPosts = await prisma.post.findMany({
-      include: postIncludeOptions,
-      orderBy: {
-        created_at: "desc",
+    const { user_id, content, parent_id, isRepost, gif_url } = req.body;
+    console.log(user_id, content, parent_id, isRepost, gif_url);
+    const attachment_key = req?.file?.key ?? gif_url;
+    console.log(attachment_key);
+    const post = await prisma.post.create({
+      data: {
+        author_id: user_id,
+        attachment_key: attachment_key,
+        content: content,
+        isRepost: isRepost === "true" ? true : false,
+        parent_id: parent_id ? parent_id : null,
       },
     });
 
-    res.status(201).json(allPosts);
+    console.log(post);
+    res.status(201).json(post);
   } catch (err) {
     console.error(err.message);
     res.status(409).json({ msg: err.message });
@@ -229,33 +211,6 @@ export const savePost = async (req, res) => {
   }
 };
 
-export const addComment = async (req, res) => {
-  try {
-    const { post_id } = req.params;
-    const { user_id, parent_id, content } = req.body;
-
-    await prisma.comment.create({
-      data: {
-        post_id: post_id,
-        parent_id: parent_id,
-        author_id: user_id,
-        content: content,
-      },
-    });
-
-    const updatedPost = await prisma.post.findUnique({
-      where: {
-        id: post_id,
-      },
-      include: postIncludeOptions,
-    });
-
-    res.status(201).json(updatedPost);
-  } catch (err) {
-    res.status(404).json({ msg: err.message });
-  }
-};
-
 export const deletePost = async (req, res) => {
   // we need to remove post from database and also remove the image from aws
   const { post_id } = req.params;
@@ -268,56 +223,10 @@ export const deletePost = async (req, res) => {
     });
     if (delete_post.picture_key) {
       // remove image from s3 bucket
-      const response = await deleteFile(delete_post.picture_key);
+      const response = await deleteFileByKey(delete_post.picture_key);
       console.log(response);
     }
     res.sendStatus(200);
-  } catch (err) {
-    console.error(err.message);
-    res.status(404).json({ msg: err.message });
-  }
-};
-
-export const likeComment = async (req, res) => {
-  try {
-    const { comment_id } = req.params;
-    const { user_id, post_id } = req.body;
-
-    const isLiked = await prisma.commentLikes.findUnique({
-      where: {
-        commentLike: {
-          user_id: user_id,
-          comment_id: comment_id,
-        },
-      },
-    });
-
-    if (isLiked) {
-      await prisma.commentLikes.delete({
-        where: {
-          commentLike: {
-            user_id: user_id,
-            comment_id: comment_id,
-          },
-        },
-      });
-    } else {
-      await prisma.commentLikes.create({
-        data: {
-          user_id: user_id,
-          comment_id: comment_id,
-        },
-      });
-    }
-
-    const updatedPost = await prisma.post.findUnique({
-      where: {
-        id: post_id,
-      },
-      include: postIncludeOptions,
-    });
-
-    res.status(201).json(updatedPost);
   } catch (err) {
     console.error(err.message);
     res.status(404).json({ msg: err.message });
