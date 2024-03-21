@@ -8,6 +8,8 @@ export const hoverEffectCSS = (color) => {
   };
 };
 
+export const API_URL = import.meta.env.VITE_API_URL;
+
 export const getDateAndTime = (created_at) => {
   const time = new Date(created_at).toLocaleTimeString(undefined, {
     hour: "numeric",

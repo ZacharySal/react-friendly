@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "src/utils/misc";
 
 const UserImage = ({ profile_img_key, id, size = "60px" }) => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const UserImage = ({ profile_img_key, id, size = "60px" }) => {
       width={size}
       height={size}
       alt="user"
-      src={`http://localhost:6001/image/${profile_img_key}`}
+      src={`${API_URL}/image/${profile_img_key}`}
     />
   );
 };

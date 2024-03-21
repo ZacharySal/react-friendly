@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ActionButton from "src/components/ActionButton";
 import { handleSetModal } from "src/features/post/store/actions";
 import { patchFollow } from "src/store/slices/userSlice";
+import { API_URL } from "src/utils/misc";
 import FlexBetween from "../../../components/FlexBetween";
 
 const ProfileInfo = ({ user }) => {
@@ -43,7 +44,7 @@ const ProfileInfo = ({ user }) => {
     <Box display="flex" flexDirection="column">
       <img
         alt=""
-        src={`http://localhost:6001/image/${user.banner_img_key}`}
+        src={`${API_URL}/image/${user.banner_img_key}`}
         style={{ maxWidth: "100%", maxHeight: "160px", objectFit: "cover" }}
       />
       <Box className="px-2 md:px-4">
@@ -57,7 +58,7 @@ const ProfileInfo = ({ user }) => {
               backgroundColor={palette.background.default}
             />
             <img
-              src={`http://localhost:6001/image/${user.profile_img_key}`}
+              src={`${API_URL}/image/${user.profile_img_key}`}
               alt=""
               className="absolute left-0 top-[-20px] h-[80px] w-[80px] rounded-full object-cover"
               style={{

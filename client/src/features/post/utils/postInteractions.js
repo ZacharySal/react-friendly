@@ -1,4 +1,5 @@
 import { store } from "src/store/store.js";
+import { API_URL } from "src/utils/misc";
 import { handleAddPost, handleSetModal } from "../store/actions";
 
 export const handleReplyClick = (e, post) => {
@@ -19,7 +20,7 @@ export const handleQuoteClick = (e, post) => {
   });
 };
 
-export const handleRepostClick = (e, post, mutateKey = "http://localhost:6001/posts/") => {
+export const handleRepostClick = (e, post, mutateKey = `${API_URL}/posts/`) => {
   e.stopPropagation();
   const formData = new FormData();
   const loggedInUserId = store.getState().user.user.id;

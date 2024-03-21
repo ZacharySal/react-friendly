@@ -4,15 +4,13 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import LoadingAnimation from "src/components/LoadingAnimation";
 import Post from "src/features/post/components/Post";
+import { API_URL } from "src/utils/misc";
 import useSWR from "swr";
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
 const BookmarksPage = () => {
   const { id } = useSelector((state) => state.user.user);
-  const { data: posts, isLoading } = useSWR(
-    `http://localhost:6001/users/${id}/savedPosts`,
-    fetcher
-  );
+  const { data: posts, isLoading } = useSWR(`${API_URL}/users/${id}/savedPosts`, fetcher);
 
   const navigate = useNavigate();
   const { palette } = useTheme();
@@ -40,7 +38,7 @@ const BookmarksPage = () => {
             <Post
               key={post.post.id}
               post={post.post}
-              mutateKey={`http://localhost:6001/users/${id}/savedPosts`}
+              mutateKey={`${API_URL}/users/${id}/savedPosts`}
             />
           ))
         )}

@@ -1,5 +1,6 @@
 import { Box, useTheme } from "@mui/material";
 import { memo } from "react";
+import { API_URL } from "src/utils/misc";
 const Attachment = memo(function Attachment({ attachment_key, border = true }) {
   const isGif = attachment_key?.includes("giphy");
   const { palette } = useTheme();
@@ -23,7 +24,7 @@ const Attachment = memo(function Attachment({ attachment_key, border = true }) {
             style={{
               border: border && `1px solid ${palette.neutral.medium}`,
             }}
-            src={`http://localhost:6001/image/${attachment_key}`}
+            src={`${API_URL}/image/${attachment_key}`}
           />
         </Box>
       )}

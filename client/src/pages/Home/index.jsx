@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import LoadingAnimation from "src/components/LoadingAnimation";
 import NewPostWidget from "src/features/post/components/NewPostWidget";
 import Post from "src/features/post/components/Post";
+import { API_URL } from "src/utils/misc";
 import useSWR from "swr";
 import FeedSelection from "./FeedSelection";
 
@@ -13,8 +14,7 @@ const HomePage = () => {
   const { id, profile_img_key } = useSelector((state) => state.user.user);
   const [postType, setPostType] = useState("feed");
 
-  const key =
-    postType === "feed" ? "http://localhost:6001/posts/" : `http://localhost:6001/users/${id}/feed`;
+  const key = postType === "feed" ? `${API_URL}/posts/` : `${API_URL}/users/${id}/feed`;
 
   const { data, isLoading } = useSWR(key, fetcher);
 
@@ -29,9 +29,7 @@ const HomePage = () => {
       {isLoading ? (
         <LoadingAnimation />
       ) : (
-        data?.map((post) => (
-          <Post key={post.id} post={post} mutateKey={"http://localhost:6001/posts/"} />
-        ))
+        data?.map((post) => <Post key={post.id} post={post} mutateKey={`${API_URL}/posts/`} />)
       )}
     </Box>
   );

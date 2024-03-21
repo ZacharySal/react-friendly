@@ -3,7 +3,6 @@ import { Box, IconButton } from "@mui/material";
 import { memo } from "react";
 const UploadedAttachment = memo(function Attachment({ attachment, setAttachment }) {
   const isGif = attachment.type === "gif";
-  console.log("uploaded attachment rendering");
   return (
     <Box className="my-1 w-full max-w-full overflow-hidden">
       <Box className="relative w-full max-w-full">

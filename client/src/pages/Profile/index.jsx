@@ -8,6 +8,7 @@ import LoadingAnimation from "src/components/LoadingAnimation";
 import Post from "src/features/post/components/Post";
 import PostTypeSelector from "src/features/profile/components/PostTypeSelector";
 import ProfileInfo from "src/features/profile/components/ProfileInfo";
+import { API_URL } from "src/utils/misc";
 import useSWR from "swr";
 import UserMedia from "./UserMedia";
 
@@ -30,7 +31,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState("posts");
 
-  const key = `http://localhost:6001/users/${user_id}`;
+  const key = `${API_URL}/users/${user_id}`;
   const { data: user, isLoading } = useSWR([key, token], fetcher);
 
   let selectedMedia = [];

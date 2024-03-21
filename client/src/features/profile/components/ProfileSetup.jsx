@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import logo from "src/assets/logo.svg";
 import { handleSetModal } from "src/features/post/store/actions";
 import { patchUser } from "src/store/slices/userSlice";
+import { API_URL } from "src/utils/misc";
 import { useSWRConfig } from "swr";
 import EditImage from "../../../components/EditImage";
 
@@ -43,7 +44,7 @@ const ProfileSetup = () => {
     formData.append("biography", newUserInfo.biography);
     formData.append("location", newUserInfo.location);
     dispatch(patchUser(formData));
-    setTimeout(() => mutate([`http://localhost:6001/users/${user.id}`, token]), 1000);
+    setTimeout(() => mutate([`${API_URL}/users/${user.id}`, token]), 1000);
   };
 
   const setUserProps = {
@@ -97,15 +98,12 @@ const ImageSelectionStep = ({ type, newUserInfo, setNewUserInfo }) => {
 
   const currImgKey = isUserImage ? profile_img_key : banner_img_key;
 
-  const [image, setImage] = useState(`http://localhost:6001/image/${currImgKey}`);
-
-  console.log(image);
+  const [image, setImage] = useState(`${API_URL}/image/${currImgKey}`);
 
   const isImageChanged = newUserInfo.profileImage;
 
   const handleUpload = async (e) => {
     const reader = new FileReader();
-    console.log(e);
     reader.addEventListener("load", () => {
       const imageElement = new Image();
       const imageUrl = reader.result?.toString() || "";

@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import { useSelector } from "react-redux";
 import LoadingAnimation from "src/components/LoadingAnimation";
 import Attachment from "src/features/post/components/Attachment";
+import { API_URL } from "src/utils/misc";
 import useSWR from "swr";
 
 const fetcher = async (params) => {
@@ -17,7 +18,7 @@ const fetcher = async (params) => {
 
 const UserMedia = ({ user_id }) => {
   const token = useSelector((state) => state.user.token);
-  const key = `http://localhost:6001/users/${user_id}/media`;
+  const key = `${API_URL}/users/${user_id}/media`;
   const { data: media, isLoading } = useSWR([key, token], fetcher);
   return (
     <>

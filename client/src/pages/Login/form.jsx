@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setLogin } from "src/store/slices/userSlice";
+import { API_URL } from "src/utils/misc";
 import * as Yup from "yup";
 
 const registerSchema = Yup.object().shape({
@@ -51,7 +52,7 @@ const Form = ({ setErrorMsg }) => {
       formData.append(value, values[value]);
     }
 
-    const savedUserResponse = await fetch("http://localhost:6001/auth/register", {
+    const savedUserResponse = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       body: formData,
     });
@@ -65,7 +66,7 @@ const Form = ({ setErrorMsg }) => {
   };
 
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch("http://localhost:6001/auth/login", {
+    const loggedInResponse = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),

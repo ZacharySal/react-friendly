@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { API_URL } from "src/utils/misc";
 
 const initialState = {
   user: null,
@@ -11,16 +12,12 @@ const initialState = {
 export const patchFollow = createAsyncThunk(
   "user/patchFollow",
   async (followee_id, { getState, rejectWithValue }) => {
-    console.log("[atch follow ");
     const state = getState();
-    const response = await fetch(
-      `http://localhost:6001/users/${state.user.user.id}/${followee_id}`,
-      {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${state.user.token}` },
-        "Content-Type": "application/json",
-      }
-    );
+    const response = await fetch(`${API_URL}/users/${state.user.user.id}/${followee_id}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${state.user.token}` },
+      "Content-Type": "application/json",
+    });
     if (response.status === 200) {
       const data = await response.json();
       return data;
@@ -34,7 +31,7 @@ export const patchUser = createAsyncThunk(
   "user/patchUser",
   async (formData, { getState, rejectWithValue }) => {
     const state = getState();
-    const response = await fetch(`http://localhost:6001/user/${state.user.user.id}`, {
+    const response = await fetch(`${API_URL}/user/${state.user.user.id}`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${state.user.token}` },
       "Content-Type": "multipart/form-data",

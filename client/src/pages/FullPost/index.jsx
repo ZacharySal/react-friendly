@@ -22,7 +22,7 @@ import Post from "src/features/post/components/Post";
 import UploadedAttachment from "src/features/post/components/UploadedAttachment";
 import { handleAddPost } from "src/features/post/store/actions";
 import { patchFollow } from "src/store/slices/userSlice";
-import { getDateAndTime } from "src/utils/misc";
+import { API_URL, getDateAndTime } from "src/utils/misc";
 import useSWR from "swr";
 import InteractionRow from "./InteractionRow";
 const fetcher = (url) => fetch(url).then((r) => r.json());
@@ -30,10 +30,7 @@ const fetcher = (url) => fetch(url).then((r) => r.json());
 const PostPage = () => {
   const { post_id } = useParams();
 
-  const { data: postInfo, isLoading } = useSWR(
-    `http://localhost:6001/posts/post/${post_id}`,
-    fetcher
-  );
+  const { data: postInfo, isLoading } = useSWR(`${API_URL}/posts/post/${post_id}`, fetcher);
 
   return <>{!isLoading && postInfo?.post?.author && <FullPost postInfo={postInfo} />}</>;
 };
@@ -85,7 +82,7 @@ const FullPost = ({ postInfo }) => {
       formData.append(name, attachment.content);
     }
 
-    handleAddPost(formData, `http://localhost:6001/posts/post/${post_id}`);
+    handleAddPost(formData, `${API_URL}/posts/post/${post_id}`);
   };
 
   useEffect(() => {
@@ -313,7 +310,7 @@ const FullPost = ({ postInfo }) => {
         <Post
           key={childPost.id}
           post={childPost}
-          mutateKey={`http://localhost:6001/posts/post/${post_id}`}
+          mutateKey={`${API_URL}/posts/post/${post_id}`}
           isPostPage={true}
         />
       ))}
