@@ -46,7 +46,7 @@ const InteractionRow = ({ post }) => {
         <PostStatistic
           hoverColor="rgb(229,24,128)"
           name="Likes"
-          onClick={() => handleLikePost(post_id, `${API_URL}/posts/post/${post_id}`)}
+          onClick={(e) => handleLikePost(e, post_id, `${API_URL}/posts/post/${post_id}`)}
         >
           {isLiked ? (
             <FavoriteOutlined sx={{ color: "rgb(229, 24, 128)", fontSize: "23px" }} />
@@ -65,7 +65,7 @@ const InteractionRow = ({ post }) => {
         <PostStatistic
           hoverColor={palette.primary.main}
           name="Saved"
-          onClick={() => handleSavePost(post_id, `${API_URL}/posts/post/${post_id}`)}
+          onClick={(e) => handleSavePost(e, post_id, `${API_URL}/posts/post/${post_id}`)}
         >
           {isSaved ? (
             <BookmarkIcon sx={{ color: palette.primary.main, fontSize: "23px" }} />
