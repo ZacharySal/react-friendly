@@ -13,7 +13,9 @@ const registerSchema = Yup.object().shape({
   displayName: Yup.string().required("required"),
   email: Yup.string().email("invalid email").required("required"),
   password: Yup.string().required("required"),
-  passwordConfirmation: Yup.string().oneOf([Yup.ref("password")], "Passwords must match"),
+  passwordConfirmation: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("required"),
   picture: Yup.string(),
 });
 
