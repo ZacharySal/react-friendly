@@ -1,9 +1,10 @@
 import { Box, InputBase, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ActionButton from "src/components/ActionButton";
 import UserImage from "src/components/UserImage";
 import { handleAddPost } from "src/features/post/store/actions";
+import { resetAddPostStatus } from "src/store/slices/postsSlice";
 import AttachmentRow from "./AttachmentRow";
 import UploadedAttachment from "./UploadedAttachment";
 
@@ -11,8 +12,9 @@ const NewPostWidget = () => {
   const [attachment, setAttachment] = useState(null);
   const [post, setPost] = useState("");
   const { palette } = useTheme();
+  const dispatch = useDispatch();
   const { id: user_id, profile_img_key } = useSelector((state) => state.user.user);
-  const postStatus = useSelector((state) => state.posts.status);
+  const postStatus = useSelector((state) => state.posts.addPostStatus);
 
   const handlePostClick = async () => {
     const formData = new FormData();
@@ -32,6 +34,7 @@ const NewPostWidget = () => {
     if (postStatus === "succeeded") {
       setAttachment(null);
       setPost("");
+      dispatch(resetAddPostStatus());
     }
   }, [postStatus]);
 
@@ -69,7 +72,7 @@ const NewPostWidget = () => {
             )}
             <ActionButton
               backgroundColor={palette.primary.main}
-              disabled={!post}
+              disabled={!post && !attachment}
               text="post"
               status={postStatus}
               handleClick={handlePostClick}

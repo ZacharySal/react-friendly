@@ -20,7 +20,7 @@ const ModalProvider = () => {
     }
   }, [modal, isDesktopScreen]);
 
-  return modalOptions[modal.type];
+  if (modal.enabled) return modalOptions[modal.type];
 };
 
 export default ModalProvider;

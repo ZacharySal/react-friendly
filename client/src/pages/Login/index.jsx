@@ -26,9 +26,10 @@ const LoginPage = () => {
         borderRadius="1.5rem"
         backgroundColor={theme.palette.background.alt}
       >
-        <Typography fontWeight="500" variant="h5" sx={{}}>
+        <Typography fontWeight="500" marginBottom="2rem" variant="h5" sx={{}}>
           Welcome to Friendly!
         </Typography>
+
         {errorMsg && (
           <Alert severity="error" sx={{ fontSize: "inherit", mb: "1.5rem" }}>
             {errorMsg}

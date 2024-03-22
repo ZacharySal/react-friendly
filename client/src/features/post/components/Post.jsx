@@ -19,6 +19,7 @@ const Post = memo(function Post({
   condensed = false,
 }) {
   if (!post) return null;
+
   const time = getTwitterTime(post.created_at);
 
   const navigate = useNavigate();

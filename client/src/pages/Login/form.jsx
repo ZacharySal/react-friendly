@@ -184,7 +184,7 @@ const Form = ({ setErrorMsg }) => {
           {isLogin && (
             <Box
               display="grid"
-              gap="30px"
+              gap="1rem"
               gridTemplateColumns="repeat(2, minmax(0,1fr))"
               sx={{
                 "& > div": {

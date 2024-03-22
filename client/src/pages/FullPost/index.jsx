@@ -21,6 +21,7 @@ import AttachmentRow from "src/features/post/components/AttachmentRow";
 import Post from "src/features/post/components/Post";
 import UploadedAttachment from "src/features/post/components/UploadedAttachment";
 import { handleAddPost } from "src/features/post/store/actions";
+import { resetAddPostStatus } from "src/store/slices/postsSlice";
 import { patchFollow } from "src/store/slices/userSlice";
 import { API_URL, getDateAndTime } from "src/utils/misc";
 import useSWR from "swr";
@@ -51,7 +52,7 @@ const FullPost = ({ postInfo }) => {
   const navigate = useNavigate();
 
   const loggedUser = useSelector((state) => state.user.user);
-  const postStatus = useSelector((state) => state.posts.status);
+  const postStatus = useSelector((state) => state.posts.addPostStatus);
 
   const isSelf = post.author.id === loggedUser.id;
 
@@ -90,6 +91,7 @@ const FullPost = ({ postInfo }) => {
       setReply("");
       setAttachment(null);
       setFocusReply(false);
+      dispatch(resetAddPostStatus());
     }
   }, [postStatus]);
 
@@ -297,7 +299,7 @@ const FullPost = ({ postInfo }) => {
               <ActionButton
                 backgroundColor={palette.primary.main}
                 visibility={!focusReply ? "hidden" : "visble"}
-                disabled={!reply}
+                disabled={!reply && !attachment}
                 status={postStatus}
                 handleClick={handlePost}
                 text="reply"

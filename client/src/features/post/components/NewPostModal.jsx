@@ -10,12 +10,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ActionButton from "src/components/ActionButton";
 import FlexBetween from "src/components/FlexBetween";
 import UserImage from "src/components/UserImage";
 import Attachment from "src/features/post/components/Attachment";
 import Post from "src/features/post/components/Post";
+import { resetAddPostStatus } from "src/store/slices/postsSlice";
 import { getTwitterTime } from "src/utils/time";
 import { handleAddPost, handleSetModal } from "../store/actions";
 import AttachmentRow from "./AttachmentRow";
@@ -27,7 +28,8 @@ const NewPostModal = () => {
   const isDesktopScreen = useMediaQuery("(min-width:768px)");
 
   const { id: user_id, profile_img_key } = useSelector((state) => state.user.user);
-  const postStatus = useSelector((state) => state.posts.status);
+  const dispatch = useDispatch();
+  const postStatus = useSelector((state) => state.posts.addPostStatus);
   const modal = useSelector((state) => state.app.modal);
 
   const [reply, setReply] = useState("");
@@ -61,6 +63,7 @@ const NewPostModal = () => {
   useEffect(() => {
     if (postStatus === "succeeded") {
       handleSetModal({ enabled: false });
+      dispatch(resetAddPostStatus());
     }
   }, [postStatus]);
 
@@ -79,7 +82,7 @@ const NewPostModal = () => {
           {!isDesktopScreen && (
             <ActionButton
               backgroundColor={palette.primary.main}
-              disabled={!reply}
+              disabled={!reply && !attachment}
               status={postStatus}
               handleClick={handlePostClick}
               text="reply"

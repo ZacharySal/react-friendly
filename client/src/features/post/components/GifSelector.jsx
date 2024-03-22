@@ -1,14 +1,7 @@
 import { GiphyFetch } from "@giphy/js-fetch-api";
 import { Grid } from "@giphy/react-components";
 import { CloseOutlined } from "@mui/icons-material";
-import {
-  Box,
-  Dialog,
-  IconButton,
-  Input,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Dialog, IconButton, Input, useMediaQuery, useTheme } from "@mui/material";
 import { useClickAway } from "@uidotdev/usehooks";
 import { useState } from "react";
 
@@ -20,9 +13,7 @@ const GifSelector = ({ close, setAttachment }) => {
   const { palette } = useTheme();
 
   const fetchGifs = (offset) =>
-    searchTerm
-      ? gf.search(searchTerm, { offset, limit: 10 })
-      : gf.trending({ offset, limit: 10 });
+    searchTerm ? gf.search(searchTerm, { offset, limit: 10 }) : gf.trending({ offset, limit: 10 });
 
   const ref = useClickAway(() => {
     close();
@@ -48,7 +39,8 @@ const GifSelector = ({ close, setAttachment }) => {
           width={isDesktopScreen ? 600 : window.innerWidth}
           columns={4}
           gutter={1}
-          noLink
+          hideAttribution={true}
+          noLink={true}
           onGifClick={(gif) => {
             setAttachment({ content: gif.images.original.url, type: "gif" });
             close();

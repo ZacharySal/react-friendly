@@ -21,8 +21,8 @@ const InteractionRow = ({ post, mutateKey }) => {
 
   const medium = palette.neutral.medium;
   const red = "rgb(229, 24, 128)";
-
-  const originalPostId = post.content === "" ? post.parent.id : post.id;
+  // TODO: fix this
+  const originalPostId = post.content === "" && post.isRepost ? post.parent.id : post.id;
 
   const { currUserLiked, currUserSaved, repostCount } = userToPostRelation(post);
 

@@ -4,6 +4,7 @@ import { mutate } from "swr";
 
 const initialState = {
   status: "idle",
+  addPostStatus: "idle",
   error: null,
 };
 
@@ -77,17 +78,22 @@ export const patchSave = createAsyncThunk(
 export const postsSlice = createSlice({
   name: "posts",
   initialState,
+  reducers: {
+    resetAddPostStatus: (state) => {
+      state.addPostStatus = "idle";
+    },
+  },
 
   extraReducers(builder) {
     builder
       .addCase(addPost.pending, (state) => {
-        state.status = "loading";
+        state.addPostStatus = "loading";
       })
       .addCase(addPost.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.addPostStatus = "succeeded";
       })
       .addCase(addPost.rejected, (state, action) => {
-        state.status = "failed";
+        state.addPostStatus = "failed";
         state.error = action.error.message;
       })
       .addCase(deletePost.pending, (state) => {
@@ -123,6 +129,6 @@ export const postsSlice = createSlice({
   },
 });
 
-export const { setPost } = postsSlice.actions;
+export const { resetAddPostStatus } = postsSlice.actions;
 
 export default postsSlice.reducer;

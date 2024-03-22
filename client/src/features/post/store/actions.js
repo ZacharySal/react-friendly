@@ -5,7 +5,8 @@ import { API_URL } from "src/utils/misc";
 
 const DEFAULT_MUTATE_KEY = `${API_URL}/posts/`;
 
-export const handleLikePost = (postId, mutateKey) => {
+export const handleLikePost = (e, postId, mutateKey) => {
+  e.stopPropagation();
   store.dispatch(
     patchLike({
       post_id: postId,
@@ -22,7 +23,8 @@ export const handleAddPost = (formData, mutateKey = DEFAULT_MUTATE_KEY) => {
   store.dispatch(addPost({ formData, mutateKey }));
 };
 
-export const handleSavePost = (postId, mutateKey) => {
+export const handleSavePost = (e, postId, mutateKey) => {
+  e.stopPropagation();
   store.dispatch(
     patchSave({
       post_id: postId,
