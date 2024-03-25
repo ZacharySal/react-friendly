@@ -4,9 +4,7 @@ import { deleteFileByKey } from "../s3.js";
 export const createPost = async (req, res) => {
   try {
     const { user_id, content, parent_id, isRepost, gif_url } = req.body;
-    console.log(user_id, content, parent_id, isRepost, gif_url);
     const attachment_key = req?.file?.key ?? gif_url;
-    console.log(attachment_key);
     const post = await prisma.post.create({
       data: {
         author_id: user_id,
@@ -17,7 +15,6 @@ export const createPost = async (req, res) => {
       },
     });
 
-    console.log(post);
     res.status(201).json(post);
   } catch (err) {
     console.error(err.message);
@@ -224,7 +221,6 @@ export const deletePost = async (req, res) => {
     if (delete_post.picture_key) {
       // remove image from s3 bucket
       const response = await deleteFileByKey(delete_post.picture_key);
-      console.log(response);
     }
     res.sendStatus(200);
   } catch (err) {

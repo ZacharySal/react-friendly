@@ -68,10 +68,7 @@ export const getUserMedia = async (req, res) => {
 
     const userMedia = user.posts
       .map((post) => {
-        console.log(post.attachment_key);
         if (post.attachment_key) {
-          console.log("here");
-          console.log(post.attachment_key);
           return post.attachment_key;
         }
       })
@@ -87,7 +84,6 @@ export const getUserMedia = async (req, res) => {
 export const getUserSavedPosts = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
 
     const user = await prisma.user.findUnique({
       where: {
@@ -156,7 +152,6 @@ export const followUnfollowUser = async (req, res) => {
       },
     });
 
-    console.log(user);
     res.status(200).json(user);
   } catch (err) {
     console.log(err.message);
@@ -178,13 +173,13 @@ export const updateUserInfo = async (req, res) => {
 
     if (files?.profile_image) {
       //await fs.remove(files.profile_image[0].path);
-      if (user.profile_img_key) {
+      if (user.profile_img_key && user.profile_img_key != "1711340915231") {
         await deleteFileByKey(user.profile_img_key);
       }
     }
     if (files?.banner_image) {
       //await fs.remove(files.banner_image[0].path);
-      if (user.banner_img_key) {
+      if (user.banner_img_key && user.banner_img_key != "1711340915296") {
         await deleteFileByKey(user.banner_img_key);
       }
     }
@@ -194,8 +189,8 @@ export const updateUserInfo = async (req, res) => {
         id: id,
       },
       data: {
-        profile_img_key: files?.profile_image?.[0]?.key || user.profile_img_key,
-        banner_img_key: files?.banner_image?.[0]?.key || user.banner_img_key,
+        profile_img_key: files?.profile_image?.[0]?.key ?? user.profile_img_key,
+        banner_img_key: files?.banner_image?.[0]?.key ?? user.banner_img_key,
         biography: biography === "null" ? user.biography : biography,
         location: location === "null" ? user.location : location,
       },
