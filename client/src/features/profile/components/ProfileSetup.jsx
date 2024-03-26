@@ -2,6 +2,7 @@ import { CameraEnhanceOutlined, EditOutlined } from "@mui/icons-material";
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   IconButton,
   TextField,
@@ -9,19 +10,20 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "react-image-crop/dist/ReactCrop.css";
 import { useDispatch, useSelector } from "react-redux";
 import logo from "src/assets/logo.svg";
 import { handleSetModal } from "src/features/post/store/actions";
-import { patchUser } from "src/store/slices/userSlice";
+import { patchUser, resetPatchUserStatus } from "src/store/slices/userSlice";
 import { API_URL } from "src/utils/misc";
 import { useSWRConfig } from "swr";
 import EditImage from "../../../components/EditImage";
 
 const ProfileSetup = () => {
-  const user = useSelector((state) => state.user.user);
-  const token = useSelector((state) => state.user.token);
+  const { user, token, patchUserStatus } = useSelector((state) => state.user);
+
+  console.log(user);
 
   const [newUserInfo, setNewUserInfo] = useState({
     profileImage: null,
@@ -44,8 +46,15 @@ const ProfileSetup = () => {
     formData.append("biography", newUserInfo.biography);
     formData.append("location", newUserInfo.location);
     dispatch(patchUser(formData));
-    setTimeout(() => mutate([`${API_URL}/users/${user.id}`, token]), 1000);
   };
+
+  useEffect(() => {
+    if (patchUserStatus === "succeeded") {
+      mutate([`${API_URL}/users/${user.id}`, token]);
+      handleSetModal({ enabled: false });
+      dispatch(resetPatchUserStatus());
+    }
+  }, [patchUserStatus]);
 
   const setUserProps = {
     newUserInfo,
@@ -77,11 +86,14 @@ const ProfileSetup = () => {
           onClick={() => {
             if (currentStep === 4) {
               handleSaveInfo();
-              handleSetModal({ enabled: false });
             } else setCurrentStep((curr) => (curr += 1));
           }}
         >
-          Continue
+          {patchUserStatus === "loading" ? (
+            <CircularProgress size={22} thickness={3.5} sx={{ color: "white" }} />
+          ) : (
+            "Continue"
+          )}
         </Button>
       </Box>
     </Dialog>
@@ -183,9 +195,9 @@ const ImageSelectionStep = ({ type, newUserInfo, setNewUserInfo }) => {
 
 const TextEntryStep = ({ type, setNewUserInfo }) => {
   const { palette } = useTheme();
-  const [userInput, setUserInput] = useState("");
-  const { location, biography } = useSelector((state) => state.user.user);
   const isBiography = type === "biography";
+  const { location, biography } = useSelector((state) => state.user.user);
+  const [userInput, setUserInput] = useState("");
 
   const handleUserInput = (e) => {
     if (userInput?.length <= 159) {

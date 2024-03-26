@@ -45,7 +45,7 @@ const ProfileInfo = ({ user }) => {
       <img
         alt=""
         src={`${API_URL}/image/${user.banner_img_key}`}
-        style={{ maxWidth: "100%", maxHeight: "160px", objectFit: "cover" }}
+        style={{ maxWidth: "100%", height: "150px", objectFit: "cover" }}
       />
       <Box className="px-2 md:px-4">
         <FlexBetween marginTop="-0.8rem">

@@ -68,13 +68,14 @@ const Form = ({ setErrorMsg }) => {
   };
 
   const login = async (values, onSubmitProps) => {
+    console.log(values);
     const loggedInResponse = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
     const loggedIn = await loggedInResponse.json();
-    onSubmitProps.resetForm();
+    onSubmitProps?.resetForm();
     if (loggedInResponse.status === 200) {
       dispatch(
         setLogin({
@@ -221,7 +222,7 @@ const Form = ({ setErrorMsg }) => {
               fullWidth
               type="submit"
               sx={{
-                m: "2rem 0",
+                m: "2rem 0rem 0rem 0rem",
                 p: "1rem",
                 backgroundColor: palette.primary.main,
                 color: palette.background.alt,
@@ -235,6 +236,26 @@ const Form = ({ setErrorMsg }) => {
             >
               {isLogin ? "LOGIN" : "REGISTER"}
             </Button>
+            {isLogin && (
+              <Button
+                fullWidth
+                onClick={() => login({ email: "zach.salvaggio@gmail.com", password: "password" })}
+                sx={{
+                  m: "1rem 0rem 1rem 0",
+                  p: "1rem",
+                  backgroundColor: "white",
+                  color: palette.primary.main,
+                  border: `1px solid ${palette.primary.main}`,
+                  "&:hover": {
+                    backgroundColor: palette.primary.main,
+                    color: palette.background.alt,
+                    border: "1px solid transparent",
+                  },
+                }}
+              >
+                {"LOGIN WITH DEMO ACCOUNT"}
+              </Button>
+            )}
             <Typography
               onClick={() => {
                 setPageType(isLogin ? "register" : "login");

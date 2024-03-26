@@ -6,6 +6,7 @@ const initialState = {
   token: null,
   error: null,
   status: "idle",
+  patchUserStatus: "idle",
   friends: [],
 };
 
@@ -53,7 +54,9 @@ export const userSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
     },
-
+    resetPatchUserStatus: (state, action) => {
+      state.patchUserStatus = "idle";
+    },
     setLogin: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
@@ -61,11 +64,6 @@ export const userSlice = createSlice({
     setLogout: (state) => {
       state.user = null;
       state.token = null;
-    },
-    setFriends: (state, action) => {
-      if (state.user) {
-        state.user.friends = action.payload.friends;
-      }
     },
   },
   /* Add all status cases */
@@ -83,19 +81,19 @@ export const userSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(patchUser.pending, (state) => {
-        state.status = "loading";
+        state.patchUserStatus = "loading";
       })
       .addCase(patchUser.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.patchUserStatus = "succeeded";
         state.user = action.payload;
       })
       .addCase(patchUser.rejected, (state, action) => {
-        state.status = "failed";
+        state.patchUserStatus = "failed";
         state.error = action.error.message;
       });
   },
 });
 
-export const { setMode, setLogin, setLogout, setFriends, setUser } = userSlice.actions;
+export const { setMode, setLogin, setLogout, setUser, resetPatchUserStatus } = userSlice.actions;
 
 export default userSlice.reducer;

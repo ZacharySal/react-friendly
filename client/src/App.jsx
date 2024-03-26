@@ -1,7 +1,6 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { Suspense, lazy, useMemo } from "react";
-import { Oval } from "react-loader-spinner";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Layout from "src/components/Layout";
@@ -42,22 +41,7 @@ function App() {
 
 const PageWrapper = ({}) => {
   return (
-    <Suspense
-      fallback={
-        <Layout>
-          <Oval
-            visible={true}
-            height="50"
-            width="50"
-            color="#1DA1F2"
-            secondaryColor="#FAFAFA"
-            ariaLabel="oval-loading"
-            wrapperStyle={{}}
-            wrapperClass="min-w-screen min-h-screen border flex justify-center items-center"
-          />
-        </Layout>
-      }
-    >
+    <Suspense fallback={<Layout></Layout>}>
       <Layout>
         <Outlet />
       </Layout>
