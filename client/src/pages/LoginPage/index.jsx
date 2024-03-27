@@ -1,13 +1,13 @@
 import { Alert, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useState } from "react";
-import Form from "../../pages/Login/form";
+import Form from "./form";
 
 const LoginPage = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const theme = useTheme();
-  const isDesktopScreen = useMediaQuery("(min-width: 768px)");
+  const isDesktopScreen = useMediaQuery("(min-width: 1000px)");
   return (
-    <Box className="min-w-screen">
+    <Box>
       <Box
         width="100%"
         backgroundColor={theme.palette.background.alt}
@@ -24,21 +24,19 @@ const LoginPage = () => {
         p="2rem"
         m="5rem auto"
         borderRadius="1.5rem"
-        className="max-w-[750px]"
         backgroundColor={theme.palette.background.alt}
       >
-        <Typography fontWeight="500" marginBottom="0.25rem" variant="h5" sx={{}}>
+        <Typography fontWeight="500" variant="h5" sx={{}}>
           Welcome to Friendly!
         </Typography>
-        <Typography
-          fontWeight="400"
-          marginBottom="1.5rem"
-          variant="h6"
-          color={theme.palette.neutral.medium}
-        >
-          Please login to continue, or use our demo account.
-        </Typography>
-
+        <Box display="flex" flexDirection="column" gap="0.25rem" py="1rem" fontWeight="300">
+          <Typography style={{ color: theme.palette.neutral.medium }} variant="h8">
+            Demo Email: demo@gmail.com
+          </Typography>
+          <Typography style={{ color: theme.palette.neutral.medium }} variant="h8">
+            Demo Password: demo123
+          </Typography>
+        </Box>
         {errorMsg && (
           <Alert severity="error" sx={{ fontSize: "inherit", mb: "1.5rem" }}>
             {errorMsg}
