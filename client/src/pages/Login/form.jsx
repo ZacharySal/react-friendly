@@ -75,7 +75,9 @@ const Form = ({ setErrorMsg }) => {
       body: JSON.stringify(values),
     });
     const loggedIn = await loggedInResponse.json();
-    onSubmitProps?.resetForm();
+    if (typeof onSubmitProps !== "undefined") {
+      onSubmitProps?.resetForm();
+    }
     if (loggedInResponse.status === 200) {
       dispatch(
         setLogin({
