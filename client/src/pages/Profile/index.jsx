@@ -50,13 +50,16 @@ const ProfilePage = () => {
       {isLoading ? (
         <LoadingAnimation />
       ) : (
-        <Box mt="1rem">
+        <Box>
           {/* TOP NAV */}
-          <Box className="mb-2 flex items-center md:mb-4 md:gap-4 md:px-4">
+          <Box
+            borderBottom={`1px solid ${palette.neutral.light}`}
+            className="h-[60px] flex items-center md:gap-4 md:px-4"
+          >
             <IconButton onClick={() => navigate(-1)}>
               <ArrowBack />
             </IconButton>
-            <Typography variant="h4" fontWeight="500">
+            <Typography variant="h4" fontWeight="700">
               {`${user.first_name} ${user.last_name}`}{" "}
             </Typography>
           </Box>

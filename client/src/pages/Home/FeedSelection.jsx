@@ -3,17 +3,17 @@ const FeedSelection = ({ postType, setPostType }) => {
   const { palette } = useTheme();
   return (
     <Box
-      className="md:sticky left-0 top-0 z-20 self-start"
+      className="md:sticky left-0 top-0 z-20 self-start h-[60px]"
       borderBottom={`1px solid ${palette.neutral.light}`}
       sx={{
         backgroundColor: palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.4)",
         backdropFilter: "blur(15px)",
       }}
     >
-      <Box className="flex justify-evenly">
+      <Box className="flex justify-evenly h-full">
         <Box
           onClick={() => setPostType("feed")}
-          className="min-w-1/2 flex items-center p-4 tracking-tight"
+          className="flex-grow flex items-center justify-center tracking-tight"
           sx={{
             borderBottom:
               postType === "feed" ? `3px solid ${palette.primary.main}` : "3px solid transparent",
@@ -30,7 +30,7 @@ const FeedSelection = ({ postType, setPostType }) => {
         </Box>
         <Box
           onClick={() => setPostType("following")}
-          className="min-w-1/2 flex cursor-pointer items-center p-4 tracking-tight"
+          className="flex-grow flex cursor-pointer items-center justify-center p-4 tracking-tight"
           sx={{
             borderBottom:
               postType === "following"

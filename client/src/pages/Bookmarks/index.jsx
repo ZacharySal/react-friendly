@@ -16,12 +16,12 @@ const BookmarksPage = () => {
   const { palette } = useTheme();
 
   return (
-    <Box className="mt-1 min-h-[1056px]">
+    <Box className="min-h-[1056px]">
       <Box>
         {/* TOP NAV */}
         <Box
           borderBottom={`1px solid ${palette.neutral.light}`}
-          className="flex items-center gap-2 px-0 pb-2 md:gap-4 md:px-4"
+          className="flex items-center gap-2 px-0 h-[60px] md:gap-4 md:px-4"
         >
           <IconButton onClick={() => navigate(-1)}>
             <ArrowBack />

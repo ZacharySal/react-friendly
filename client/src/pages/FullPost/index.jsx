@@ -106,7 +106,7 @@ const FullPost = ({ postInfo }) => {
       <Box borderBottom={`1px solid ${palette.neutral.light}`}>
         {/* TOP NAV */}
         <Box
-          className="py-2 sticky top-0 flex items-center gap-2 px-0 md:mb-4 md:gap-4 md:px-4 z-[100]"
+          className="h-[60px] sticky top-0 flex items-center gap-2 px-0 md:gap-4 md:px-4 z-[100]"
           sx={{
             backgroundColor: palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.8)",
             backdropFilter: "blur(40px)",
